@@ -13,24 +13,34 @@ class DistrictRepositoryTest < Minitest::Test
   })
   refute dr.districts.empty?
   assert_instance_of District, dr.districts["ACADEMY 20"]
+  assert_equal 2, dr.districts.count
   end
 
-  def test_can_find_a_district_by_name
-    skip
+  def test_can_find_a_district_object_by_name
     dr = DistrictRepository.new
-    district = dr.find_by_name("aasasdg")
-    assert_equal nil
+    dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/sample.csv"
+      }
+    })
+    district = dr.find_by_name("asasdg")
+    assert_equal nil, district
     district = dr.find_by_name("Academy 20")
-    assert_equal "ACADEMY 20"
+    assert_instance_of District, district
   end
 
   def test_can_find_multiple_districts_by_name
-    skip
     dr = DistrictRepository.new
-    district = dr.find_all_matching("asasfd, asdffew")
-    assert_equal []
-    district = dr.find_all_matching("Academy 20, Adams County 14")
-    assert_equal "ACADEMY 20, ADAMS COUNTY 14"
+    dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/sample.csv"
+      }
+    })
+    d = dr.find_all_matching("asasfd")
+    assert_equal [], d
+    d = dr.find_all_matching("Aca")
+    assert d[0].kind_of?(District)
+    assert_equal 1, d.count
   end
 
 end
