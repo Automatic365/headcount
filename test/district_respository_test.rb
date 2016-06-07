@@ -1,6 +1,19 @@
 require './test/test_helper'
+require './lib/district_repository'
 
 class DistrictRepositoryTest < Minitest::Test
+
+  def test_loads_data
+    dr = DistrictRepository.new
+    assert dr.districts.empty?
+    dr.load_data({
+    :enrollment => {
+      :kindergarten => "./data/sample.csv"
+    }
+  })
+  refute dr.districts.empty?
+  assert_instance_of District, dr.districts["ACADEMY 20"]
+  end
 
   def test_can_find_a_district_by_name
     skip
