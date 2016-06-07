@@ -1,0 +1,22 @@
+{
+  "Unit Tests": {
+    "coverage": {
+      "/Users/David/turing/1module/Projects/headcount/lib/district.rb": [
+        1,
+        null,
+        1,
+        null,
+        1,
+        2,
+        null,
+        null,
+        1,
+        1,
+        null,
+        null,
+        null
+      ]
+    },
+    "timestamp": 1465256125
+  }
+}
