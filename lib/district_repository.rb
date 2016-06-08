@@ -6,8 +6,8 @@ class DistrictRepository
 
   attr_reader :districts
 
-  def initialize
-    @districts = {}
+  def initialize(districts = {})
+    @districts = districts
     # @er = EnrollmentRexpository.new
   end
 

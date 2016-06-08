@@ -18,6 +18,10 @@ class DistrictRepositoryTest < Minitest::Test
 
   def test_can_find_a_district_object_by_name
     dr = DistrictRepository.new
+    # d1 = District.new(name: "ACADEMY 20")
+    # d2 = District.new(name: "ADAMS COUNTY")
+    # x = d1.district.merge(d2.district)
+    # dr = DistrictRepository.new(x)
     dr.load_data({
       :enrollment => {
         :kindergarten => "./data/sample.csv"
