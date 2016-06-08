@@ -17,8 +17,7 @@ class DistrictRepository
     file = data[:enrollment][:kindergarten]
 
     #reads csv file and adds hash containing district name pointing to district object
-    contents = CSV.open(file, headers: true, header_converters: :symbol)
-    contents.each do |row|
+    contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
       unless districts.keys.include?(row[:location].upcase)
         districts.merge!(row[:location] => District.new(name: row[:location]))
       end
