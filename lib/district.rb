@@ -1,5 +1,4 @@
 class District
-
 attr_reader :attributes
 
   def initialize(attributes)

@@ -1,5 +1,4 @@
 class Enrollment
-
   attr_reader :attributes
 
   def initialize(attributes)
