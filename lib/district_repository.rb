@@ -1,56 +1,62 @@
 require 'csv'
 require 'pry'
+require './lib/district'
 
-class DistrictRespository
+class DistrictRepository
 
-  def intialize(districts = [])
+  attr_reader :districts
+
+  def initialize(districts = {})
     @districts = districts
+    # @er = EnrollmentRepository.new
+  end
+
+  def load_data(data)
+
+    #saves csv as file
+    file = data[:enrollment][:kindergarten]
+
+    #reads csv file and adds hash containing district name pointing to district object
+    contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+      unless districts.keys.include?(row[:location].upcase)
+        districts.merge!(row[:location] => District.new(name: row[:location]))
+      end
+    end
   end
 
   def find_by_name(name)
-    @districts.find do |district|
-      district.name == name
+    found_district = nil
+    districts.find do |district_name, district_object|
+      found_district = district_object if district_name == name.upcase
     end
+    found_district
+    #searches districts hash for object
+    #returns district object
   end
 
-  def find_all_matching(fragment)
-    @districts.select do |district|
-      district.name.downcase.include?(fragment)
-    end
-  end
 
+  def find_all_matching(name_fragment)
+    found_districts = []
+    districts.find_all do |district_name, district_object|
+      found_districts << district_object if district_name.include?(name_fragment.upcase)
+    end
+    found_districts
+    end
+    #
+    # def intialize(districts = [])
+    #   @districts = districts
+    # end
+    #
+    # def find_by_name(name)
+    #   @districts.find do |district|
+    #     district.name == name
+    #   end
+    # end
+    #
+    # def find_all_matching(fragment)
+    #   @districts.select do |district|
+    #     district.name.downcase.include?(fragment)
+    #   end
+    # end
 
 end
-#   def initialize
-#     @districts = []
-#     # @er = EnrollmentRexpository.new
-#   end
-#
-#   def find_by_name
-#   end
-#
-#   def find_all_matching
-#   end
-#
-#   def load_data(hash)
-#     @hash = hash
-#   end
-# end
-#
-# contents = CSV.open "./data/Kindergartners in full-day program.csv", headers: true, header_converters: :symbol
-# contents.each do |row|
-#   location = row[:location]
-#   timeframe = row[:timeframe]
-#   data_format = row[:dataformat]
-#   data = row[:data]
-# end
-
-
-
-# dr = DistrictRepository.new
-# dr.load_data({
-#   :enrollment => {
-#     :kindergarten => "./data/Kindergartners in full-day program.csv"
-#   }
-# })
-# district = dr.find_by_name("ACADEMY 20")
