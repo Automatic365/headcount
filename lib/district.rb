@@ -1,13 +1,13 @@
 class District
 
-attr_reader :district
+attr_reader :attributes
 
-  def initialize(hash)
-    @district = hash
+  def initialize(attributes)
+    @attributes = attributes
   end
 
   def name
-    district[:name].upcase
+    attributes[:name].upcase
   end
 
 end
