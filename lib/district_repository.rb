@@ -31,8 +31,6 @@ class DistrictRepository
 
 def find_by_name(name)
   districts[name.upcase]
-  #searches districts hash for object
-  #returns district object
 end
 
 def find_all_matching(name_fragment)

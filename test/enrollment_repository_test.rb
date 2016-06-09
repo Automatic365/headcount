@@ -16,6 +16,20 @@ class EnrollmentRepositoryTest < Minitest::Test
     assert_equal 2, er.enrollments.count
   end
 
+  def test_it_can_load_multiple_data_files
+    er = EnrollmentRepository.new
+    assert er.enrollments.empty?
+    er.load_data({
+      :enrollment => {
+        :kindergarten => "./data/sample.csv",
+          :high_school_graduation => "./data/sample_hs.csv"
+      }
+    })
+    assert_instance_of Enrollment, er.enrollments["ACADEMY 20"]
+    assert_equal 2, er.enrollments.count
+  end
+  # assert_equal ({:name => "ACADEMY 20", :kindergarten_participation => {2010 => 0.3915, 2011 => 0.35356, 2012 => 0.2677}, :high_school_graduation => {2010 = 0.895, 2011 => 0.895, 2012 => 0.889, 2013 => 0.913, 2014 => 0.898}})
+
   def test_find_by_name
     e1 = Enrollment.new({:name => "ACADEMY 20"})
     e2 = Enrollment.new({:name => "cheese"})
@@ -26,7 +40,7 @@ class EnrollmentRepositoryTest < Minitest::Test
     assert_equal "ACADEMY 20", enrollment1.name
     assert_equal "CHEESE", enrollment2.name
   end
-  #
+
   # def test_load_data(file_tree)
   #   # {
   #   # :enrollment => {
