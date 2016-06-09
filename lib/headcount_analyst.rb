@@ -9,16 +9,23 @@ class HeadcountAnalyst
   end
 
   def kindergarten_participation_rate_variation(district, comparison)
-    d1 = get_district_average(district)
-    d2 = get_district_average(comparison[:against])
-    truncate_float(d1 / d2)
+    d1 = get_district_data(district)
+    d2 = get_district_data(comparison[:against])
+    avg1 = calculate_average(d1)
+    avg2 = calculate_average(d2)
+    truncate_float(avg1 / avg2)
   end
 
-  def get_district_average(district)
+  def kindergarten_participation_rate_variation_trend(district, comparison)
+
+    data1 = get_district_data(district)
+    data2 = get_district_data(comparison[:against])
+    averages = data1.merge(data2){ |key, oldval, newval| truncate_float(newval / oldval) }
+    end
+
+  def get_district_data(district)
     name = get_district_by_name(district)
     data = access_enrollment_attributes(name)
-    avg = calculate_average(data)
-    truncate_float(avg)
   end
 
   def get_district_by_name(name)

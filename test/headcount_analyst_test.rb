@@ -39,10 +39,11 @@ class HeadcountAnalystTest < Minitest::Test
       }
     })
     ha = HeadcountAnalyst.new(dr)
-    assert_equal 0.372, ha.get_district_average("ACADEMY 20")
+    d = ha.get_district_data("ACADEMY 20")
+    assert_equal 0.37261500000000003, ha.calculate_average(d)
   end
 
-  def test_it_can_can_calculate_average_district_participation_rate
+  def test_it_can_compare_participation_rate
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
@@ -50,11 +51,11 @@ class HeadcountAnalystTest < Minitest::Test
       }
     })
     ha = HeadcountAnalyst.new(dr)
-    assert_equal 1.019, ha.kindergarten_participation_rate_variation('ACADEMY 20', :against => 'COLORADO')
+    assert_equal 1.018, ha.kindergarten_participation_rate_variation('ACADEMY 20', :against => 'COLORADO')
+    assert_equal 1.242, ha.kindergarten_participation_rate_variation('ACADEMY 20', :against => 'ADAMS COUNTY 14')
   end
 
-  def test_it_can_compare_participation_rate_to_state_average
-    skip
+  def test_it_can_compare_participation_rate_trend
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
@@ -62,25 +63,8 @@ class HeadcountAnalystTest < Minitest::Test
       }
     })
     ha = HeadcountAnalyst.new(dr)
-    result = ha.kindergarten_participation_rate_variation('ACADEMY 20', :against => 'COLORADO')
-
-    assert_equal 0.75, result
+    result = ha.kindergarten_participation_rate_variation_trend('ACADEMY 20', :against => 'COLORADO')
+    assert_equal ({2007=>1.007, 2006=>0.952}), result
   end
-
-  def test_it_can_compare_participation_rate_to_another_district
-    skip
-    result = ha.kindergarten_participation_rate_variation('ACADEMY 20', :against => 'Dist 2')
-    assert_equal 0.5, result
-  end
-
-  def test_it_can_compare_partipation_rate_trend_against_the_state_average
-    skip
-    result = ha.kindergarten_participation_rate_variation('ACADEMY 20', :against => 'Dist 2')
-    assert_equal 0.5, result
-  end
-
-
-
-
 
 end
