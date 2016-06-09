@@ -13,19 +13,20 @@ class EnrollmentRepository
 
     all_data = {}
     data[:enrollment].each do |school_type, csv|
+      school_type = :kindergarten_participation if school_type == :kindergarten
       file = csv
 
       file_data = CSV.open(file, headers: true, header_converters: :symbol)
 
       file_data.each do |row|
         if all_data.has_key?(row[:location])
-          if all_data[row[:location]].has_key?(school_type.to_sym)
-            all_data[row[:location]][school_type.to_sym][row[:timeframe].to_i] = row[:data].to_f
+          if all_data[row[:location]].has_key?(school_type)
+            all_data[row[:location]][school_type][row[:timeframe].to_i] = row[:data].to_f
           else
-            all_data[row[:location]][school_type.to_sym] = {row[:timeframe].to_i => row[:data].to_f}
+            all_data[row[:location]][school_type] = {row[:timeframe].to_i => row[:data].to_f}
           end
         else
-          all_data[row[:location]] = {:name => row[:location].upcase, school_type.to_sym => {row[:timeframe].to_i => row[:data].to_f}}
+          all_data[row[:location]] = {:name => row[:location].upcase, school_type => {row[:timeframe].to_i => row[:data].to_f}}
         end
       end
     end

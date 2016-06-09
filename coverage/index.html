@@ -14,27 +14,27 @@
       <img src="./assets/0.10.0/loading.gif" alt="loading"/>
     </div>
     <div id="wrapper" style="display:none;">
-      <div class="timestamp">Generated <abbr class="timeago" title="2016-06-09T15:42:36-06:00">2016-06-09T15:42:36-06:00</abbr></div>
+      <div class="timestamp">Generated <abbr class="timeago" title="2016-06-09T17:05:00-06:00">2016-06-09T17:05:00-06:00</abbr></div>
       <ul class="group_tabs"></ul>
 
       <div id="content">
         <div class="file_list_container" id="AllFiles">
   <h2>
     <span class="group_name">All Files</span>
-    (<span class="covered_percent"><span class="yellow">85.71%</span></span>
+    (<span class="covered_percent"><span class="yellow">83.72%</span></span>
      covered at
      <span class="covered_strength">
        <span class="green">
-         1.91
+         1.43
        </span>
     </span> hits/line)
   </h2>
   <a name="AllFiles"></a>
   <div>
     <b>3</b> files in total.
-    <b>42</b> relevant lines. 
+    <b>43</b> relevant lines. 
     <span class="green"><b>36</b> lines covered</span> and
-    <span class="red"><b>6</b> lines missed </span>
+    <span class="red"><b>7</b> lines missed </span>
   </div>
   <table class="file_list">
     <thead>
@@ -52,12 +52,12 @@
       
       <tr>
         <td class="strong"><a href="#f2074d81eba3ec0fc11cd8d9368cf648710f5854" class="src_link" title="lib/enrollment.rb">lib/enrollment.rb</a></td>
-        <td class="red strong">66.67 %</td>
+        <td class="red strong">62.5 %</td>
         <td>29</td>
-        <td>15</td>
+        <td>16</td>
         <td>10</td>
-        <td>5</td>
-        <td>1.2</td>
+        <td>6</td>
+        <td>1.0</td>
       </tr>
       
       <tr>
@@ -67,7 +67,7 @@
         <td>24</td>
         <td>24</td>
         <td>0</td>
-        <td>2.5</td>
+        <td>1.8</td>
       </tr>
       
       <tr>
@@ -99,11 +99,11 @@
         <div class="source_table" id="f2074d81eba3ec0fc11cd8d9368cf648710f5854">
   <div class="header">
     <h3>lib/enrollment.rb</h3>
-    <h4><span class="red">66.67 %</span> covered</h4>
+    <h4><span class="red">62.5 %</span> covered</h4>
     <div>
-      <b>15</b> relevant lines. 
+      <b>16</b> relevant lines. 
       <span class="green"><b>10</b> lines covered</span> and
-      <span class="red"><b>5</b> lines missed.</span>
+      <span class="red"><b>6</b> lines missed.</span>
     </div>
   </div>
   
@@ -152,8 +152,8 @@
           <code class="ruby">  def initialize(attributes)</code>
         </li>
       
-        <li class="covered" data-hits="6" data-linenumber="8">
-          <span class="hits">6</span>
+        <li class="covered" data-hits="4" data-linenumber="8">
+          <span class="hits">4</span>
           
           <code class="ruby">    @attributes = attributes</code>
         </li>
@@ -230,7 +230,7 @@
           <code class="ruby">        truncate_float(attributes[:kindergarten_participation][year])</code>
         </li>
       
-        <li class="never" data-hits="" data-linenumber="21">
+        <li class="missed" data-hits="0" data-linenumber="21">
           
           
           <code class="ruby">      end</code>
@@ -248,20 +248,20 @@
           <code class="ruby"></code>
         </li>
       
-        <li class="covered" data-hits="1" data-linenumber="24">
-          <span class="hits">1</span>
+        <li class="never" data-hits="" data-linenumber="24">
+          
           
           <code class="ruby">  def name</code>
         </li>
       
-        <li class="covered" data-hits="4" data-linenumber="25">
-          <span class="hits">4</span>
+        <li class="covered" data-hits="1" data-linenumber="25">
+          <span class="hits">1</span>
           
           <code class="ruby">    attributes[:name].upcase</code>
         </li>
       
-        <li class="never" data-hits="" data-linenumber="26">
-          
+        <li class="covered" data-hits="4" data-linenumber="26">
+          <span class="hits">4</span>
           
           <code class="ruby">  end</code>
         </li>
@@ -344,8 +344,8 @@
           <code class="ruby">  def initialize(enrollments = {})</code>
         </li>
       
-        <li class="covered" data-hits="3" data-linenumber="8">
-          <span class="hits">3</span>
+        <li class="covered" data-hits="2" data-linenumber="8">
+          <span class="hits">2</span>
           
           <code class="ruby">    @enrollments = enrollments</code>
         </li>
@@ -380,124 +380,124 @@
           <code class="ruby"></code>
         </li>
       
-        <li class="covered" data-hits="2" data-linenumber="14">
-          <span class="hits">2</span>
+        <li class="covered" data-hits="1" data-linenumber="14">
+          <span class="hits">1</span>
           
           <code class="ruby">    all_data = {}</code>
         </li>
       
-        <li class="covered" data-hits="2" data-linenumber="15">
-          <span class="hits">2</span>
+        <li class="covered" data-hits="1" data-linenumber="15">
+          <span class="hits">1</span>
           
           <code class="ruby">    data[:enrollment].each do |school_type, csv|</code>
         </li>
       
-        <li class="covered" data-hits="3" data-linenumber="16">
-          <span class="hits">3</span>
+        <li class="covered" data-hits="2" data-linenumber="16">
+          <span class="hits">2</span>
           
-          <code class="ruby">      file = csv</code>
+          <code class="ruby">      school_type = :kindergarten_participation if school_type == :kindergarten</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="17">
           
           
-          <code class="ruby"></code>
+          <code class="ruby">      file = csv</code>
         </li>
       
-        <li class="covered" data-hits="3" data-linenumber="18">
-          <span class="hits">3</span>
+        <li class="covered" data-hits="2" data-linenumber="18">
+          <span class="hits">2</span>
           
-          <code class="ruby">      file_data = CSV.open(file, headers: true, header_converters: :symbol)</code>
+          <code class="ruby"></code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="19">
           
           
+          <code class="ruby">      file_data = CSV.open(file, headers: true, header_converters: :symbol)</code>
+        </li>
+      
+        <li class="covered" data-hits="2" data-linenumber="20">
+          <span class="hits">2</span>
+          
           <code class="ruby"></code>
         </li>
       
-        <li class="covered" data-hits="3" data-linenumber="20">
-          <span class="hits">3</span>
+        <li class="covered" data-hits="6" data-linenumber="21">
+          <span class="hits">6</span>
           
           <code class="ruby">      file_data.each do |row|</code>
         </li>
       
-        <li class="covered" data-hits="9" data-linenumber="21">
-          <span class="hits">9</span>
+        <li class="covered" data-hits="4" data-linenumber="22">
+          <span class="hits">4</span>
           
           <code class="ruby">        if all_data.has_key?(row[:location])</code>
         </li>
       
-        <li class="covered" data-hits="5" data-linenumber="22">
-          <span class="hits">5</span>
+        <li class="covered" data-hits="2" data-linenumber="23">
+          <span class="hits">2</span>
           
-          <code class="ruby">          if all_data[row[:location]].has_key?(school_type.to_sym)</code>
-        </li>
-      
-        <li class="covered" data-hits="3" data-linenumber="23">
-          <span class="hits">3</span>
-          
-          <code class="ruby">            all_data[row[:location]][school_type.to_sym][row[:timeframe].to_i] = row[:data].to_f</code>
+          <code class="ruby">          if all_data[row[:location]].has_key?(school_type)</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="24">
           
           
-          <code class="ruby">          else</code>
+          <code class="ruby">            all_data[row[:location]][school_type][row[:timeframe].to_i] = row[:data].to_f</code>
         </li>
       
         <li class="covered" data-hits="2" data-linenumber="25">
           <span class="hits">2</span>
           
-          <code class="ruby">            all_data[row[:location]][school_type.to_sym] = {row[:timeframe].to_i =&gt; row[:data].to_f}</code>
+          <code class="ruby">          else</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="26">
           
           
-          <code class="ruby">          end</code>
+          <code class="ruby">            all_data[row[:location]][school_type] = {row[:timeframe].to_i =&gt; row[:data].to_f}</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="27">
           
           
-          <code class="ruby">        else</code>
+          <code class="ruby">          end</code>
         </li>
       
-        <li class="covered" data-hits="4" data-linenumber="28">
-          <span class="hits">4</span>
+        <li class="covered" data-hits="2" data-linenumber="28">
+          <span class="hits">2</span>
           
-          <code class="ruby">          all_data[row[:location]] = {:name =&gt; row[:location].upcase, school_type.to_sym =&gt; {row[:timeframe].to_i =&gt; row[:data].to_f}}</code>
+          <code class="ruby">        else</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="29">
           
           
-          <code class="ruby">        end</code>
+          <code class="ruby">          all_data[row[:location]] = {:name =&gt; row[:location].upcase, school_type =&gt; {row[:timeframe].to_i =&gt; row[:data].to_f}}</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="30">
           
           
-          <code class="ruby">      end</code>
+          <code class="ruby">        end</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="31">
           
           
+          <code class="ruby">      end</code>
+        </li>
+      
+        <li class="covered" data-hits="1" data-linenumber="32">
+          <span class="hits">1</span>
+          
           <code class="ruby">    end</code>
         </li>
       
-        <li class="covered" data-hits="2" data-linenumber="32">
-          <span class="hits">2</span>
+        <li class="covered" data-hits="1" data-linenumber="33">
+          <span class="hits">1</span>
           
           <code class="ruby">    create_enrollments(all_data)</code>
-        </li>
-      
-        <li class="covered" data-hits="2" data-linenumber="33">
-          <span class="hits">2</span>
-          
-          <code class="ruby">    require &quot;pry&quot;; binding.pry</code>
         </li>
       
         <li class="never" data-hits="" data-linenumber="34">
@@ -518,14 +518,14 @@
           <code class="ruby">  def create_enrollments(data)</code>
         </li>
       
-        <li class="covered" data-hits="2" data-linenumber="37">
-          <span class="hits">2</span>
+        <li class="covered" data-hits="1" data-linenumber="37">
+          <span class="hits">1</span>
           
           <code class="ruby">    data.each do |name, district_data|</code>
         </li>
       
-        <li class="covered" data-hits="4" data-linenumber="38">
-          <span class="hits">4</span>
+        <li class="covered" data-hits="2" data-linenumber="38">
+          <span class="hits">2</span>
           
           <code class="ruby">      enrollments.merge!(name =&gt; Enrollment.new(district_data))</code>
         </li>
