@@ -9,7 +9,7 @@ class DistrictTest < Minitest::Test
   end
 
   def test_district_has_a_uppercase_name
-    d = District.new(name: "Academy 20")
+    d = District.new(name: "ACADEMY 20")
     assert_equal "ACADEMY 20", d.name
   end
 

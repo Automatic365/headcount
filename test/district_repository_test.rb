@@ -47,6 +47,17 @@ class DistrictRepositoryTest < Minitest::Test
     assert_equal 1, d.count
   end
 
+  def test_can_access_enrollment_data
+    dr = DistrictRepository.new
+    dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/sample.csv"
+      }
+    })
+    district = dr.find_by_name("ACADEMY 20")
+    assert_equal 0.391, district.enrollment.kindergarten_participation_in_year(2007)
+  end
+
 #   def test_loads_districts
 #     skip
 #     dr = DistrictRepository.new

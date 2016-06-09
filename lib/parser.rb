@@ -1,5 +1,7 @@
-class Parser
+module Parser
 
-  
+
+
+
 
 end
