@@ -2,7 +2,6 @@ require 'csv'
 require_relative 'enrollment'
 
 class EnrollmentRepository
-
   attr_reader :enrollments
 
   def initialize(enrollments = {})

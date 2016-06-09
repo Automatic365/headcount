@@ -1,11 +1,18 @@
 require './test/test_helper'
 require './lib/enrollment'
+require './lib/helper_methods'
 
 class EnrollmentTest < Minitest::Test
+  include HelperMethods
 
   def test_enrollment_stores_an_enrollment
     e = Enrollment.new({:name => "ACADEMY 20", :kindergarten_participation => {2010 => 0.3915, 2011 => 0.35356, 2012 => 0.2677}})
     assert_equal ({:name => "ACADEMY 20", :kindergarten_participation => {2010 => 0.3915, 2011 => 0.35356, 2012 => 0.2677}}), e.attributes
+  end
+
+  def test_enrollment_has_a_name
+    e = Enrollment.new({:name => "ACADEMY 20", :kindergarten_participation => {2010 => 0.3915, 2011 => 0.35356, 2012 => 0.2677}})
+    assert_equal "ACADEMY 20", e.name
   end
 
   def test_truncates_float
