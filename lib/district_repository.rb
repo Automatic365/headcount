@@ -30,11 +30,7 @@ class DistrictRepository
   end
 
 def find_by_name(name)
-  found_district = nil
-  districts.find do |district_name, district_object|
-    found_district = district_object if district_name == name.upcase
-  end
-  found_district
+  districts[name.upcase]
   #searches districts hash for object
   #returns district object
 end

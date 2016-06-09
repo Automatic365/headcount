@@ -15,6 +15,17 @@ class EnrollmentRepositoryTest < Minitest::Test
     assert_instance_of Enrollment, er.enrollments["ACADEMY 20"]
     assert_equal 2, er.enrollments.count
   end
+
+  def test_find_by_name
+    e1 = Enrollment.new({:name => "ACADEMY 20"})
+    e2 = Enrollment.new({:name => "cheese"})
+    er = EnrollmentRepository.new({e1.name => e1, e2.name => e2})
+    enrollment1 = er.find_by_name("Academy 20")
+    enrollment2 = er.find_by_name("cheese")
+    assert_equal nil, er.find_by_name("alakjhgs")
+    assert_equal "ACADEMY 20", enrollment1.name
+    assert_equal "CHEESE", enrollment2.name
+  end
   #
   # def test_load_data(file_tree)
   #   # {

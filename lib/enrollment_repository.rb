@@ -35,11 +35,7 @@ class EnrollmentRepository
   end
 
   def find_by_name(name)
-    found_enrollment = nil
-    enrollments.find do |enrollment_name, enrollment_object|
-      found_enrollment = enrollment_object if enrollment_name == name.upcase
-    end
-    found_enrollment
+    enrollments[name.upcase]
     #searches districts hash for object
     #returns district object
   end

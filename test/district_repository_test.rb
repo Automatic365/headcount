@@ -17,34 +17,28 @@ class DistrictRepositoryTest < Minitest::Test
   end
 
   def test_can_find_a_district_object_by_name
-    dr = DistrictRepository.new
-    # d1 = District.new(name: "ACADEMY 20")
-    # d2 = District.new(name: "ADAMS COUNTY")
-    # x = d1.district.merge(d2.district)
-    # dr = DistrictRepository.new(x)
-    dr.load_data({
-      :enrollment => {
-        :kindergarten => "./data/sample.csv"
-      }
-    })
-    district = dr.find_by_name("asasdg")
-    assert_equal nil, district
-    district = dr.find_by_name("Academy 20")
-    assert_instance_of District, district
+    d1 = District.new(name: "Academy 20")
+    d2 = District.new(name: "ADAMS COUNTY")
+    dr = DistrictRepository.new({d1.name => d1, d2.name => d2})
+    assert_equal nil, dr.find_by_name("asdfklj")
+    district1 = dr.find_by_name("Academy 20")
+    district2 = dr.find_by_name("Adams County")
+    assert_equal "ACADEMY 20", district1.name
+    assert_equal "ADAMS COUNTY", district2.name
   end
 
   def test_can_find_multiple_districts_by_name
-    dr = DistrictRepository.new
-    dr.load_data({
-      :enrollment => {
-        :kindergarten => "./data/sample.csv"
-      }
-    })
+    d1 = District.new(name: "ACADEMY 20")
+    d2 = District.new(name: "Academy 30")
+    dr = DistrictRepository.new({d1.name => d1, d2.name => d2})
+
+
     d = dr.find_all_matching("asasfd")
     assert_equal [], d
     d = dr.find_all_matching("Aca")
-    assert d[0].kind_of?(District)
-    assert_equal 1, d.count
+    assert_equal "ACADEMY 20", d[0].name
+    assert_equal "ACADEMY 30", d[1].name
+    assert_equal 2, d.count
   end
 
   def test_can_access_enrollment_data
