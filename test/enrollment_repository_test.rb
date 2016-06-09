@@ -4,6 +4,7 @@ require './lib/enrollment_repository'
 class EnrollmentRepositoryTest < Minitest::Test
 
   def test_loads_data
+    skip
     er = EnrollmentRepository.new
     assert er.enrollments.empty?
     er.load_data({
