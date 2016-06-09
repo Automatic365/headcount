@@ -21,9 +21,24 @@ class Enrollment
       end
   end
 
+  def graduation_rate_by_year
+    attributes[:high_school_graduation].reduce({}) do |result, pair|
+      result.merge!(pair.first => truncate_float(pair.last))
+      result
+    end
+  end
+
+  def graduation_rate_in_year(year)
+    if attributes[:high_school_graduation][year] != nil
+      truncate_float(attributes[:high_school_graduation][year])
+    end
+  end
+
   def name
     attributes[:name].upcase
   end
+
+
 
 
 end
