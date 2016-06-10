@@ -28,7 +28,7 @@ class EnrollmentRepositoryTest < Minitest::Test
       }
     })
     assert_instance_of Enrollment, er.enrollments["ACADEMY 20"]
-    assert_equal 2, er.enrollments.count
+    assert_equal 3, er.enrollments.count
     result = {2012=>0.88983, 2013=>0.91373}
     assert_equal result, er.enrollments["ACADEMY 20"].attributes[:high_school_graduation]
   end
@@ -55,7 +55,7 @@ class EnrollmentRepositoryTest < Minitest::Test
     assert_equal "CHEESE", enrollment2.name
   end
 
-  
+
 
   # def test_load_data(file_tree)
   #   # {

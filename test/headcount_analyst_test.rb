@@ -7,22 +7,22 @@ require './lib/helper_methods'
 class HeadcountAnalystTest < Minitest::Test
   include HelperMethods
 
-  def test_access_district_by_name
+  def test_it_can_access_district_by_name
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
     assert_instance_of District, ha.get_district_by_name("ACADEMY 20")
   end
 
-  def test_access_enrollment_attributes
+  def test_it_can_access_enrollment_attributes
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
@@ -31,11 +31,11 @@ class HeadcountAnalystTest < Minitest::Test
     assert_equal result, ha.access_enrollment_attributes(d)
   end
 
-  def test_calculate_district_average
+  def test_it_can_calculate_district_average
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
@@ -43,11 +43,11 @@ class HeadcountAnalystTest < Minitest::Test
     assert_equal 0.37261500000000003, ha.calculate_average(d)
   end
 
-  def test_compare_participation_rate
+  def test_it_can_compare_participation_rate
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
@@ -55,11 +55,11 @@ class HeadcountAnalystTest < Minitest::Test
     assert_equal 1.242, ha.kindergarten_participation_rate_variation('ACADEMY 20', :against => 'ADAMS COUNTY 14')
   end
 
-  def test_compare_participation_rate_trend
+  def test_it_can_compare_participation_rate_trend
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
@@ -71,12 +71,27 @@ class HeadcountAnalystTest < Minitest::Test
     dr = DistrictRepository.new
     dr.load_data({
           :enrollment => {
-            :kindergarten => "./data/sample.csv",
+            :kindergarten => "./data/sample_with_statewide_info.csv",
               :high_school_graduation => "./data/sample_hs.csv"
           }})
     ha = HeadcountAnalyst.new(dr)
     result = ha.kindergarten_participation_against_high_school_graduation("ACADEMY 20")
-    assert_equal "something", result
+    assert_equal 0.843, result
   end
 
+  def test_kindergarten_participation_correlates_with_high_school_graduation
+    dr = DistrictRepository.new
+    dr.load_data({
+          :enrollment => {
+            :kindergarten => "./data/sample_with_statewide_info.csv",
+              :high_school_graduation => "./data/sample_hs.csv"
+          }})
+    ha = HeadcountAnalyst.new(dr)
+    result1 = ha.kindergarten_participation_correlates_with_high_school_graduation(for: 'ACADEMY 20')
+    result2 = ha.kindergarten_participation_correlates_with_high_school_graduation(for: 'STATEWIDE')
+    result3 = ha.kindergarten_participation_correlates_with_high_school_graduation(across: ['district_1', 'district_2', 'district_3', 'district_4'])
+    assert result1
+    assert result2
+    assert result3
+  end
 end

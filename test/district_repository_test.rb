@@ -14,7 +14,7 @@ class DistrictRepositoryTest < Minitest::Test
   })
   refute dr.districts.empty?
   assert_instance_of District, dr.districts["ACADEMY 20"]
-  assert_equal 2, dr.districts.count
+  assert_equal 3, dr.districts.count
   end
 
   def test_can_find_a_district_object_by_name

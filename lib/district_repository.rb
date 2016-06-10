@@ -19,7 +19,7 @@ class DistrictRepository
       contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
         # unless districts.include?(row[:location])
           new_enrollment = er.find_by_name(row[:location])
-          d = District.new(name: row[:location])
+          d = District.new(name: row[:location].upcase)
           d.enrollment = new_enrollment
           districts.merge!(row[:location].upcase => d)
         # end
