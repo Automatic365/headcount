@@ -40,5 +40,22 @@ class HeadcountAnalyst
     data.values.reduce(0, :+) / data.values.count
   end
 
+  def kindergarten_participation_against_high_school_graduation(district)
+    d1 = get_district_data(district)
+    calculate_average(d1)
+    # want to access the kindergarten participation rates for a district
+      #get the averagae of these rates
+      #Divide these rates by statewide average
+    #Get statewide partipation for kindergarten
+      #get average
+    # want to access the high school graduation rates for a district
+      #get the averagae of these rates
+      #Divide these rates by statewide average
+    #Get statewide partipation for highschool
+      #get average
+    #Divide kindergarten variation by graduation variation
+  end
+
+
 
 end
