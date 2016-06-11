@@ -78,7 +78,34 @@ class HeadcountAnalyst
   end
 
   def kindergarten_participation_correlates_with_high_school_graduation(district)
-    
+    if district.keys[0] == :for
+      name = district[:for].upcase
+      if name == "STATEWIDE"
+        #Loop through every district in district repo
+        #Check if variance is true or false
+        # if the number of true is > 70%, return true
+        correlations = district_repo.districts.reduce([]) do |data, name|
+          variance = kindergarten_participation_against_high_school_graduation(name.first)
+            data << true if variance >= 0.6 && variance <= 1.5
+            data << false if variance < 0.6 || variance > 1.5
+            data
+          end
+        total = correlations.count
+        positive_correlations = correlations.reduce(0) do |sum, correlation|
+          sum + 1 if correlation == true
+          sum
+        end
+        positive_correlations / total
+      else
+        #Check a particular district
+        variance = kindergarten_participation_against_high_school_graduation(name)
+        if variance > 0.6 && variance < 1.5
+          true
+        else
+          false
+        end
+      end
+    end
     #if the key of the argument is 'for'
       #take the value as the argument
       #If the result of kindergarten_participation_against_high_school_graduation(district)
@@ -93,6 +120,7 @@ class HeadcountAnalyst
     # if the key of the argument is 'across'
       #loop each district through the method above
       #
+
   end
 
 
