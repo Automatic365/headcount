@@ -7,7 +7,7 @@ require './lib/helper_methods'
 class HeadcountAnalystTest < Minitest::Test
   include HelperMethods
 
-  def test_it_can_access_district_by_name
+  def test_access_district_by_name
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
@@ -18,7 +18,7 @@ class HeadcountAnalystTest < Minitest::Test
     assert_instance_of District, ha.get_district_by_name("ACADEMY 20")
   end
 
-  def test_it_can_access_enrollment_attributes
+  def test_access_enrollment_attributes
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
@@ -28,10 +28,10 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(dr)
     d = ha.get_district_by_name("Academy 20")
     result = {2007=>0.39159, 2006=>0.35364}
-    assert_equal result, ha.access_enrollment_attributes(d)
+    assert_equal result, ha.access_enrollment_attributes(d, :kindergarten_participation)
   end
 
-  def test_it_can_calculate_district_average
+  def test_calculate_average
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
@@ -39,11 +39,32 @@ class HeadcountAnalystTest < Minitest::Test
       }
     })
     ha = HeadcountAnalyst.new(dr)
-    d = ha.get_district_data("ACADEMY 20")
+    d = ha.get_district_data("ACADEMY 20", :kindergarten_participation)
     assert_equal 0.37261500000000003, ha.calculate_average(d)
   end
 
-  def test_it_can_compare_participation_rate
+  def test_get_average_for_attribute
+    dr = DistrictRepository.new
+    dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/sample_with_statewide_info.csv"
+      }
+    })
+    ha = HeadcountAnalyst.new(dr)
+    district = "ACADEMY 20"
+    school_type = :kindergarten_participation
+    assert_equal 0.37261500000000003, ha.get_average_for_attribute(district, school_type)
+  end
+
+  def test_calculate_variance
+    dr = DistrictRepository.new
+    ha = HeadcountAnalyst.new(dr)
+    district_avg = 10.0
+    state_avg = 20.0
+    assert_equal 0.5, ha.calculate_variance(district_avg, state_avg)
+  end
+
+  def test_compare_participation_rate
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
@@ -55,7 +76,20 @@ class HeadcountAnalystTest < Minitest::Test
     assert_equal 1.242, ha.kindergarten_participation_rate_variation('ACADEMY 20', :against => 'ADAMS COUNTY 14')
   end
 
-  def test_it_can_compare_participation_rate_trend
+  def test_calculate_variance_for_attribute_against_state
+    dr = DistrictRepository.new
+    dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/sample_with_statewide_info.csv"
+      }
+    })
+    ha = HeadcountAnalyst.new(dr)
+    district = "Academy 20"
+    school_type = :kindergarten_participation
+    assert_equal 1.0188810806376638, ha.calculate_variance_for_attribute_against_state(district, school_type)
+  end
+
+  def test_compare_participation_rate_trend
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
@@ -77,6 +111,74 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(dr)
     result = ha.kindergarten_participation_against_high_school_graduation("ACADEMY 20")
     assert_equal 0.843, result
+  end
+
+  def test_correlation_trend_exists?
+    dr = DistrictRepository.new
+    ha = HeadcountAnalyst.new(dr)
+    assert ha.correlation_trend_exists?(0.9)
+    refute ha.correlation_trend_exists?(0.5)
+  end
+
+  def test_is_correlated?
+    dr = DistrictRepository.new
+    ha = HeadcountAnalyst.new(dr)
+    assert ha.is_correlated?(0.9)
+    refute ha.is_correlated?(1.8)
+  end
+
+  def test_count_positive_correlation
+    dr = DistrictRepository.new
+    ha = HeadcountAnalyst.new(dr)
+    correlations = [true, false, true]
+    assert_equal 2, ha.count_positive_correlations(correlations)
+  end
+
+  def test_find_correlations
+    dr = DistrictRepository.new
+    dr.load_data({
+          :enrollment => {
+            :kindergarten => "./data/sample_with_statewide_info.csv",
+              :high_school_graduation => "./data/sample_hs.csv"
+          }})
+    ha = HeadcountAnalyst.new(dr)
+    districts = dr.districts.reject { |district| district == "COLORADO"}
+    correlations = [true, true]
+    assert_equal correlations, ha.find_correlations(districts.keys)
+  end
+
+  def test_check_for_correlation_trend
+    dr = DistrictRepository.new
+    dr.load_data({
+          :enrollment => {
+            :kindergarten => "./data/sample_with_statewide_info.csv",
+              :high_school_graduation => "./data/sample_hs.csv"
+          }})
+    ha = HeadcountAnalyst.new(dr)
+    assert ha.check_for_correlation_trend(dr.districts.keys)
+  end
+
+  def test_omit_statewide_data
+    dr = DistrictRepository.new
+    dr.load_data({
+          :enrollment => {
+            :kindergarten => "./data/sample_with_statewide_info.csv",
+              :high_school_graduation => "./data/sample_hs.csv"
+          }})
+    ha = HeadcountAnalyst.new(dr)
+    district_names = ha.omit_statewide_data(dr.districts)
+    refute district_names.keys.include?("COLORADO")
+  end
+
+  def test_check_for_single_correlation
+    dr = DistrictRepository.new
+    dr.load_data({
+          :enrollment => {
+            :kindergarten => "./data/sample_with_statewide_info.csv",
+              :high_school_graduation => "./data/sample_hs.csv"
+          }})
+    ha = HeadcountAnalyst.new(dr)
+    assert ha.check_for_single_correlation("Academy 20")
   end
 
   def test_kindergarten_participation_correlates_with_high_school_graduation
