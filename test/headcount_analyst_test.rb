@@ -11,7 +11,7 @@ class HeadcountAnalystTest < Minitest::Test
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
@@ -22,7 +22,7 @@ class HeadcountAnalystTest < Minitest::Test
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
@@ -35,7 +35,7 @@ class HeadcountAnalystTest < Minitest::Test
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
@@ -47,7 +47,7 @@ class HeadcountAnalystTest < Minitest::Test
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
@@ -59,7 +59,7 @@ class HeadcountAnalystTest < Minitest::Test
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
-        :kindergarten => "./data/sample2.csv"
+        :kindergarten => "./data/sample_with_statewide_info.csv"
       }
     })
     ha = HeadcountAnalyst.new(dr)
@@ -67,4 +67,36 @@ class HeadcountAnalystTest < Minitest::Test
     assert_equal ({2007=>1.007, 2006=>0.952}), result
   end
 
+  def test_kindergarten_participation_rate_against_high_school_graduation
+    skip
+    dr = DistrictRepository.new
+    dr.load_data({
+          :enrollment => {
+            :kindergarten => "./data/sample_with_statewide_info.csv",
+              :high_school_graduation => "./data/sample_hs.csv"
+          }})
+    ha = HeadcountAnalyst.new(dr)
+    result = ha.kindergarten_participation_against_high_school_graduation("ACADEMY 20")
+    assert_equal 0.843, result
+  end
+
+  def test_kindergarten_participation_correlates_with_high_school_graduation
+    dr = DistrictRepository.new
+    dr.load_data({
+          :enrollment => {
+            :kindergarten => "./data/sample_with_statewide_info.csv",
+              :high_school_graduation => "./data/sample_hs.csv"
+          }})
+    # d1 = District.new(name: "ACADEMY 20")
+    # dr = DistrictRepository.new({d1.name => d1})
+    # e1 = Enrollment.new({"ACADEMY 20"=> {:name=>"ACADEMY 20", :kindergarten_participation=>{2007=>0.39159}, :high_school_participation=>{2007=>NaN}}}
+    # er = EnrollmentRepository.new({e1.name => e1})
+    ha = HeadcountAnalyst.new(dr)
+    result1 = ha.kindergarten_participation_correlates_with_high_school_graduation(for: 'Academy 20')
+    result2 = ha.kindergarten_participation_correlates_with_high_school_graduation(for: 'STATEWIDE')
+    # result3 = ha.kindergarten_participation_correlates_with_high_school_graduation(across: ['ACADEMY 20', 'ADAMS COUNTY 14'])
+    assert result1
+    assert result2
+    # assert result3
+  end
 end

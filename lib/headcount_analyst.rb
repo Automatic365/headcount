@@ -17,7 +17,6 @@ class HeadcountAnalyst
   end
 
   def kindergarten_participation_rate_variation_trend(district, comparison)
-
     data1 = get_district_data(district)
     data2 = get_district_data(comparison[:against])
     averages = data1.merge(data2){ |key, oldval, newval| truncate_float(newval / oldval) }
@@ -39,6 +38,91 @@ class HeadcountAnalyst
   def calculate_average(data)
     data.values.reduce(0, :+) / data.values.count
   end
+
+  def kindergarten_participation_against_high_school_graduation(district)
+    # d1 = get_district_data(district)
+    dname1 = get_district_by_name(district)
+    d1 = dname1.enrollment.attributes[:kindergarten_participation]
+    d_avg1 = calculate_average(d1)
+    #.372615
+    name1 = get_district_by_name("COLORADO")
+    state_kdg = name1.enrollment.attributes[:kindergarten_participation]
+    state_kdg_avg = calculate_average(state_kdg)
+    #.36571
+    kdg_variance = d_avg1 / state_kdg_avg
+    #1.01888
+    dname2 = get_district_by_name(district)
+    d2 = dname2.enrollment.attributes[:high_school_graduation]
+    d1_avg2 = calculate_average(d2)
+    #.90178
+    name2 = get_district_by_name("COLORADO")
+    state_hs = name2.enrollment.attributes[:high_school_graduation]
+    state_avg_hs = calculate_average(state_hs)
+    #.74627
+    hs_variance = d1_avg2 / state_avg_hs
+    #1.208383
+    total_variance = kdg_variance / hs_variance
+    truncate_float(total_variance)
+    #.843176
+  #   # want to access the kindergarten participation rates for a district
+  #     #get the averagae of these rates
+  #     #Divide these rates by statewide average
+  #   #Get statewide partipation for kindergarten
+  #     #get average
+  #   # want to access the high school graduation rates for a district
+  #     #get the averagae of these rates
+  #     #Divide these rates by statewide average
+  #   #Get statewide partipation for highschool
+  #     #get average
+  #   #Divide kindergarten variation by graduation variation
+  end
+
+  def kindergarten_participation_correlates_with_high_school_graduation(district)
+    if district.keys[0] == :for
+      name = district[:for].upcase
+      if name == "STATEWIDE"
+        #Loop through every district in district repo
+        #Check if variance is true or false
+        # if the number of true is > 70%, return true
+        correlations = district_repo.districts.reduce([]) do |data, name|
+          variance = kindergarten_participation_against_high_school_graduation(name.first)
+            data << true if variance >= 0.6 && variance <= 1.5
+            data << false if variance < 0.6 || variance > 1.5
+            data
+          end
+        total = correlations.count
+        positive_correlations = correlations.reduce(0) do |sum, correlation|
+          sum + 1 if correlation == true
+          sum
+        end
+        positive_correlations / total
+      else
+        #Check a particular district
+        variance = kindergarten_participation_against_high_school_graduation(name)
+        if variance > 0.6 && variance < 1.5
+          true
+        else
+          false
+        end
+      end
+    end
+    #if the key of the argument is 'for'
+      #take the value as the argument
+      #If the result of kindergarten_participation_against_high_school_graduation(district)
+      #is between .6 and 1.5 return true
+
+      #else if the argument is 'statewide'
+        #run the previous step for every district1
+        #keep track of the number of true and false
+        # if the number of true is > 70%, return true
+
+
+    # if the key of the argument is 'across'
+      #loop each district through the method above
+      #
+
+  end
+
 
 
 end
