@@ -68,7 +68,6 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_kindergarten_participation_rate_against_high_school_graduation
-    skip
     dr = DistrictRepository.new
     dr.load_data({
           :enrollment => {
@@ -94,9 +93,9 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(dr)
     result1 = ha.kindergarten_participation_correlates_with_high_school_graduation(for: 'Academy 20')
     result2 = ha.kindergarten_participation_correlates_with_high_school_graduation(for: 'STATEWIDE')
-    # result3 = ha.kindergarten_participation_correlates_with_high_school_graduation(across: ['ACADEMY 20', 'ADAMS COUNTY 14'])
+    result3 = ha.kindergarten_participation_correlates_with_high_school_graduation(across: ['ACADEMY 20', 'ADAMS COUNTY 14'])
     assert result1
     assert result2
-    # assert result3
+    assert result3
   end
 end
