@@ -43,10 +43,10 @@ class StatewideTestTest < Minitest::Test
     swt = StatewideTest.new({name: "Academy 20", :pacific_islander => {2008 => { :math => 0.857, :reading => 0.866, :writing => 0.671}}})
     result = {2008 => { :math => 0.857, :reading => 0.866, :writing => 0.671}}
     assert_equal 0.857, swt.proficient_for_subject_by_race_in_year(:math, :pacific_islander, 2008)
-    assert_raises UnknownRaceError do
+    assert_raises UnknownDataError do
       swt.proficient_for_subject_by_race_in_year(:science, :pacific_islander, 2008)
     end
-    assert_raises UnknownRaceError do
+    assert_raises UnknownDataError do
       swt.proficient_for_subject_by_race_in_year(:math, :martian, 2008)
     end
   end

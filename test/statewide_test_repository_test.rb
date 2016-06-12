@@ -24,9 +24,11 @@ class StatewideTestRepositoryTest < Minitest::Test
   end
 
   def test_find_by_name
-    skip
-      str = str.find_by_name("ACADEMY 20")
-      #returns str object
+      st = StatewideTest.new(name: "Academy 20")
+      str = StatewideTestRepository.new({st.name => st})
+      assert_equal nil, str.find_by_name("asdfklj")
+      result = str.find_by_name("ACADEMY 20")
+      assert_equal "ACADEMY 20", result.name
   end
 
 

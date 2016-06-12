@@ -47,7 +47,7 @@ attr_reader :attributes, :grades, :races, :subjects
     if subjects.include?(subject) && races.include?(race)
       attributes[race][year][subject]
     else
-      raise UnknownRaceError
+      raise UnknownDataError
     end
   end
 

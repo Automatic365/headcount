@@ -27,7 +27,11 @@ class StatewideTestRepository
         name = row[:location].upcase
         subject = row[:score].downcase.to_sym if row.include?(:score)
         year = row[:timeframe].to_i
-        percentage = row[:data].to_f
+        if row[:data] == "N/A"
+          percentage = "N/A"
+        else
+          percentage = row[:data].to_f
+        end
         if row.include?(:race_ethnicity)
           if row[:race_ethnicity] == "Hawaiian/Pacific Islander"
           race = :pacific_islander
@@ -74,6 +78,10 @@ end
     data.each do |name, district_data|
       statewide_tests.merge!(name => StatewideTest.new(district_data))
     end
+  end
+
+  def find_by_name(name)
+    statewide_tests[name.upcase]
   end
 
 
