@@ -10,7 +10,6 @@ class EnrollmentRepository
 
   def load_data(data)
     all_data = {}
-
     data[:enrollment].each do |school_type, csv|
       school_type = :kindergarten_participation if school_type == :kindergarten
       file = csv
@@ -18,14 +17,18 @@ class EnrollmentRepository
       file_data = CSV.open(file, headers: true, header_converters: :symbol)
 
       file_data.each do |row|
-        if all_data.has_key?(row[:location].upcase)
-          if all_data[row[:location].upcase].has_key?(school_type)
-            all_data[row[:location].upcase][school_type][row[:timeframe].to_i] = row[:data].to_f
+        name = row[:location].upcase
+        year = row[:timeframe].to_i
+        percentage = row[:data].to_f
+
+        if all_data.has_key?(name)
+          if all_data[name].has_key?(school_type)
+            all_data[name][school_type][year] = percentage
           else
-            all_data[row[:location].upcase][school_type] = {row[:timeframe].to_i => row[:data].to_f}
+            all_data[name][school_type] = {year => percentage}
           end
         else
-          all_data[row[:location].upcase] = {:name => row[:location].upcase, school_type => {row[:timeframe].to_i => row[:data].to_f}}
+          all_data[name] = {:name => name, school_type => {year => percentage}}
         end
       end
     end
