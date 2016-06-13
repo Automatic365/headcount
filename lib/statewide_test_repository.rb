@@ -14,16 +14,11 @@ class StatewideTestRepository
     data[:statewide_testing].each do |category, csv|
       category = 3 if category == :third_grade
       category = 8 if category == :eighth_grade
-      category = :math if category == :math
-      category = :reading if category == :reading
-      category = :writing if category == :writing
       subjects = [:math, :reading, :writing]
 
       file = csv
 
-      file_data = CSV.open(file, headers: true, header_converters: :symbol)
-
-      file_data.each do |row|
+      contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
         name = row[:location].upcase
         subject = row[:score].downcase.to_sym if row.include?(:score)
         year = row[:timeframe].to_i

@@ -38,6 +38,7 @@ class DistrictRepository
             # unless districts.include?(name)
               name = row[:location].upcase
               new_statewide_test = st.find_by_name(name)
+              #if district exists in districts, just use that district
               d = District.new(name: name)
               d.statewide_test = new_statewide_test
               districts.merge!(name => d)
@@ -95,9 +96,10 @@ class DistrictRepository
 #   end
 # end
 
-  def create_new_district(name)
-    District.new(name: name)
-  end
+
+  # def create_new_district(name)
+  #   District.new(name: name)
+  # end
 
 
   def find_by_name(name)
