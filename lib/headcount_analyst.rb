@@ -33,13 +33,9 @@ class HeadcountAnalyst
     district.enrollment.attributes[school_type]
   end
 
-  def calculate_average(data)
-    data.values.reduce(0, :+) / data.values.count
-  end
-
   def get_average_for_attribute(district, school_type)
     d = get_district_data(district, school_type)
-    calculate_average(d)
+    calculate_average(d.values)
   end
 
   def calculate_variance(district_avg, state_avg)

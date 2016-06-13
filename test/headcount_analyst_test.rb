@@ -40,7 +40,7 @@ class HeadcountAnalystTest < Minitest::Test
     })
     ha = HeadcountAnalyst.new(dr)
     d = ha.get_district_data("ACADEMY 20", :kindergarten_participation)
-    assert_equal 0.37261500000000003, ha.calculate_average(d)
+    assert_equal 0.37261500000000003, ha.calculate_average(d.values)
   end
 
   def test_get_average_for_attribute
