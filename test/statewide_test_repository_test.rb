@@ -16,17 +16,19 @@ class StatewideTestRepositoryTest < Minitest::Test
     })
     assert_instance_of StatewideTest, str.statewide_tests["ACADEMY 20"]
     assert_equal 181, str.statewide_tests.count
-    result = {2012=>0.88983, 2013=>0.91373}
-    require "pry"; binding.pry
-    assert_equal result, str.statewide_tests["ACADEMY 20"].attributes["Asian"]
-    assert_equal result, str.statewide_tests["ACADEMY 20"].attributes[3]
+    result1 = {2011=>{:math=>0.8169, :reading=>0.8976, :writing=>0.8268}, 2012=>{:math=>0.8182, :reading=>0.89328, :writing=>0.8083}, 2013=>{:math=>0.8053, :reading=>0.90193, :writing=>0.8109}, 2014=>{:math=>0.8, :reading=>0.85531, :writing=>0.7894}}
+    result2 = {2008=>{:math=>0.857, :reading=>0.866, :writing=>0.671}, 2009=>{:math=>0.824, :reading=>0.862, :writing=>0.706}, 2010=>{:math=>0.849, :reading=>0.864, :writing=>0.662}, 2011=>{:math=>0.819, :reading=>0.867, :writing=>0.678}, 2012=>{:reading=>0.87, :math=>0.83, :writing=>0.65517}, 2013=>{:math=>0.8554, :reading=>0.85923, :writing=>0.6687}, 2014=>{:math=>0.8345, :reading=>0.83101, :writing=>0.63942}}
+    assert_equal result1, str.statewide_tests["ACADEMY 20"].attributes[:asian]
+    assert_equal result2, str.statewide_tests["ACADEMY 20"].attributes[3]
 
   end
 
   def test_find_by_name
-    skip
-      str = str.find_by_name("ACADEMY 20")
-      #returns str object
+      st = StatewideTest.new(name: "Academy 20")
+      str = StatewideTestRepository.new({st.name => st})
+      assert_equal nil, str.find_by_name("asdfklj")
+      result = str.find_by_name("ACADEMY 20")
+      assert_equal "ACADEMY 20", result.name
   end
 
 

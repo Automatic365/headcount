@@ -1,6 +1,6 @@
-class District
-attr_reader :attributes
-attr_accessor :enrollment, :statewide_test
+class EconomicProfile
+
+  attr_reader :attributes
 
   def initialize(attributes)
     @attributes = attributes

@@ -18,7 +18,6 @@ class DistrictRepositoryTest < Minitest::Test
   end
 
   def test_can_find_a_district_object_by_name
-    skip
     d1 = District.new(name: "Academy 20")
     d2 = District.new(name: "ADAMS COUNTY")
     dr = DistrictRepository.new({d1.name => d1, d2.name => d2})
@@ -30,7 +29,6 @@ class DistrictRepositoryTest < Minitest::Test
   end
 
   def test_can_find_multiple_districts_by_name
-    skip
     d1 = District.new(name: "ACADEMY 20")
     d2 = District.new(name: "Academy 30")
     dr = DistrictRepository.new({d1.name => d1, d2.name => d2})
@@ -45,7 +43,6 @@ class DistrictRepositoryTest < Minitest::Test
   end
 
   def test_can_access_enrollment_data
-    skip
     dr = DistrictRepository.new
     dr.load_data({
       :enrollment => {
@@ -54,6 +51,26 @@ class DistrictRepositoryTest < Minitest::Test
     })
     district = dr.find_by_name("ACADEMY 20")
     assert_equal 0.391, district.enrollment.kindergarten_participation_in_year(2007)
+  end
+
+  def test_can_access_statewide_test_data
+    dr = DistrictRepository.new
+    dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/sample.csv"
+      },
+      :statewide_testing => {
+        :third_grade => "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv",
+        :eighth_grade => "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv",
+        :math => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv",
+        :reading => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv",
+        :writing => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
+      }
+    })
+    district = dr.find_by_name("ACADEMY 20")
+    assert_instance_of StatewideTest, district.statewide_test
+    result = district.statewide_test.proficient_for_subject_by_grade_in_year(:math, 3, 2008)
+    assert_equal 0.857, result
   end
 
 end
