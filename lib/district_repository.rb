@@ -5,12 +5,13 @@ require_relative 'enrollment_repository'
 require_relative 'statewide_test_repository'
 
 class DistrictRepository
-  attr_reader :districts, :er, :st
+  attr_reader :districts, :er, :str, :epr
 
   def initialize(districts = {})
     @districts = districts
     @er = EnrollmentRepository.new
-    @st = StatewideTestRepository.new
+    @str = StatewideTestRepository.new
+    @epr = EconomicProfileRepository.new
   end
 
 
@@ -31,18 +32,30 @@ class DistrictRepository
           end
         end
       elsif category == :statewide_testing
-        st.load_data(data)
+        str.load_data(data)
         data[:statewide_testing].each do |data_element, csv|
           file = csv
           contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
             # unless districts.include?(name)
               name = row[:location].upcase
-              new_statewide_test = st.find_by_name(name)
+              new_statewide_test = str.find_by_name(name)
               #if district exists in districts, just use that district
               d = District.new(name: name)
               d.statewide_test = new_statewide_test
               districts.merge!(name => d)
             # end
+          end
+        end
+      elsif category == :economic_profile
+        epr.load_data(data)
+        data[:economic_profile].each do |data_element, csv|
+          file = csv
+          contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+            name = row[:location].upcase
+            new_economic_profile = epr.find_by_name(name)
+            d = District.new(name: name)
+            d.economic_profile = new_economic_profile
+            districts.merge!(name => d)
           end
         end
       end
@@ -71,7 +84,7 @@ class DistrictRepository
 #     if category == :enrollment
 #       repository = er
 #     elsif category == :statewide_testing
-#       repository = st
+#       repository = str
 #     end
 #     repository.load_data(data)
 #     subcategory.each do |attribute, csv|

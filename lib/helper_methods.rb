@@ -5,4 +5,8 @@ module HelperMethods
     (float * 1000).floor / 1000.to_f
   end
 
+  def calculate_average(data)
+    data.reduce(0, :+) / data.count
+  end
+  
 end

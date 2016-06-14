@@ -3,6 +3,8 @@ require 'minitest/pride'
 require './lib/headcount_analyst'
 require './lib/district_repository'
 require './lib/helper_methods'
+require './lib/errors'
+require './lib/economic_profile_repository'
 
 class HeadcountAnalystTest < Minitest::Test
   include HelperMethods
@@ -40,7 +42,7 @@ class HeadcountAnalystTest < Minitest::Test
     })
     ha = HeadcountAnalyst.new(dr)
     d = ha.get_district_data("ACADEMY 20", :kindergarten_participation)
-    assert_equal 0.37261500000000003, ha.calculate_average(d)
+    assert_equal 0.37261500000000003, ha.calculate_average(d.values)
   end
 
   def test_get_average_for_attribute
@@ -199,5 +201,33 @@ class HeadcountAnalystTest < Minitest::Test
     assert result1
     assert result2
     assert result3
+  end
+
+  def test_top_statewide_test_year_over_year_growth
+    dr = DistrictRepository.new
+    dr.load_data({
+      :statewide_testing => {
+        :third_grade => "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv",
+        :eighth_grade => "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv",
+        :math => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv",
+        :reading => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv",
+        :writing => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
+      }
+    })
+    ha = HeadcountAnalyst.new(dr)
+    result1 = ha.top_statewide_test_year_over_year_growth(grade: 3, subject: :math)
+    result2 = ha.top_statewide_test_year_over_year_growth(grade: 3, top: 3, subject: :math)
+    # result3 = ha.top_statewide_test_year_over_year_growth(grade: 3)
+    # result4 = ha.top_statewide_test_year_over_year_growth(grade: 8, :weighting => {:math => 0.5, :reading => 0.5, :writing => 0.0})
+    assert_raises InsufficientInformationError do
+      ha.top_statewide_test_year_over_year_growth(subject: :math)
+    end
+    assert_raises UnknownDataError do
+      ha.top_statewide_test_year_over_year_growth(grade: 13, subject: :math)
+    end
+    assert_equal ["SPRINGFIELD RE-4", 0.149], result1
+    assert_equal [["SPRINGFIELD RE-4", 0.149], ["WESTMINSTER 50", 0.1], ["CENTENNIAL R-1", 0.088]], result2
+    # assert_equal ['top distrct, 0.123'], result3
+    # assert_equal ['top district name', 0.111], result4
   end
 end
