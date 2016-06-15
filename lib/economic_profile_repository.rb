@@ -29,7 +29,7 @@ class EconomicProfileRepository
 
           if category == :free_or_reduced_price_lunch
             if dataformat == "Percent"
-              percentage = data.to_f
+              percent = data.to_f
             elsif dataformat == "Number"
               total = data.to_i
             end
@@ -40,15 +40,15 @@ class EconomicProfileRepository
             income = data.to_i
           else
             year = timeframe.to_i
-            percentage  = data.to_f
+            percent  = data.to_f
           end
 
           if category == :free_or_reduced_price_lunch
-            compile_lunch_data(all_data, name, category, year, percentage, total, dataformat)
+            compile_lunch_data(all_data, name, category, year, percent, total, dataformat)
           elsif category == :median_household_income
             compile_other_data(all_data, name, category, years, income)
           elsif category == :title_i || category == :children_in_poverty
-            compile_other_data(all_data, name, category, year, percentage)
+            compile_other_data(all_data, name, category, year, percent)
           end
         end
       end
@@ -57,9 +57,9 @@ class EconomicProfileRepository
 
       #name => district
       #{category => {year range => amount}}
-      #{category} => {year => percentage}
-      #{category} => {year => {:percentage => percentage, :total => total}}
-      #{category} => {year => percentage}
+      #{category} => {year => percent}
+      #{category} => {year => {:percent => percent, :total => total}}
+      #{category} => {year => percent}
 
     def find_by_name(name)
       economic_profiles[name.upcase]
@@ -83,21 +83,21 @@ class EconomicProfileRepository
       end
     end
 
-    def compile_lunch_data(all_data, name, category, year, percentage, total, dataformat)
+    def compile_lunch_data(all_data, name, category, year, percent, total, dataformat)
       if all_data[name] && all_data[name][category] && all_data[name][category][year] && dataformat == "Percent"
-        all_data[name][category][year][:percentage] = percentage
+        all_data[name][category][year][:percentage] = percent
       end
       if all_data[name] && all_data[name][category] && all_data[name][category][year] && dataformat == "Number"
         all_data[name][category][year][:total] = total
       end
       if all_data[name] && all_data[name][category] && all_data[name][category][year].nil?
-        all_data[name][category][year] = {:percentage => percentage, :total => total}
+        all_data[name][category][year] = {:percentage => percent, :total => total}
       end
       if all_data[name] && all_data[name][category].nil?
-        all_data[name][category] = {year => {:percentage => percentage, :total => total}}
+        all_data[name][category] = {year => {:percentage => percent, :total => total}}
       end
       if all_data[name].nil?
-        all_data[name] = {category => {year => {:percentage => percentage, :total => total}}}
+        all_data[name] = {category => {year => {:percentage => percent, :total => total}}}
       end
     end
 end

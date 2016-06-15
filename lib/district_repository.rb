@@ -15,134 +15,36 @@ class DistrictRepository
     @epr = EconomicProfileRepository.new
   end
 
+def load_data(data)
+  data.each do |category, data_collection|
+    if category == :enrollment
+      er.load_data(data)
+    elsif category == :statewide_testing
+      str.load_data(data)
+    elsif category == :economic_profile
+      epr.load_data(data)
+    end
+  end
+  create_districts
+end
 
-  def load_data(data)
-    data.each do |category, data_collection|
-      if category == :enrollment
-        er.load_data(data)
-        data[:enrollment].each do |data_element, csv|
-          file = csv
-          contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-            # unless districts.include?(row[:location])
-              name = row[:location].upcase
-              new_enrollment = er.find_by_name(name)
-              d = District.new(name: name)
-              d.enrollment = new_enrollment
-              districts.merge!(name => d)
-            # end
-          end
-        end
-      elsif category == :statewide_testing
-        str.load_data(data)
-        data[:statewide_testing].each do |data_element, csv|
-          file = csv
-          contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-            # unless districts.include?(name)
-              name = row[:location].upcase
-              new_statewide_test = str.find_by_name(name)
-              #if district exists in districts, just use that district
-              d = District.new(name: name)
-              d.statewide_test = new_statewide_test
-              districts.merge!(name => d)
-            # end
-          end
-        end
-      elsif category == :economic_profile
-        epr.load_data(data)
-        data[:economic_profile].each do |data_element, csv|
-          file = csv
-          contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-            name = row[:location].upcase
-            new_economic_profile = epr.find_by_name(name)
-            d = District.new(name: name)
-            d.economic_profile = new_economic_profile
-            districts.merge!(name => d)
-          end
-        end
-      end
+  def create_districts
+    er.enrollments.keys.each do |name|
+      districts[name] = District.new({:name => name}, self)
     end
   end
 
-#  NEW IDEAS
-  # def load_data(data)
-  #   data.each do |category, data_collection|
-  #     if category == :enrollment
-  #       create_new_district(data, er, category)
-  #     elsif category == :statewide_testing
-  #       create_new_district(data, str, category)
-  #     elsif category == :economic_profile
-  #       create_new_district(data, epr, category)
-  #     end
-  #   end
-  # end
-  #
-  # def create_new_district(data, repository, category)
-  #   repository.load_data(data)
-  #   data[category].each do |data_element, csv|
-  #     file = csv
-  #     contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-  #       name = row[:location].upcase
-  #       new_instance = repository.find_by_name(name)
-  #       d = District.new(name: name)
-  #       d.category = new_instance
-  #       districts.merge!(name => d)
-  #     end
-  #   end
-  # end
+  def find_enrollment(district_name)
+    er.find_by_name(district_name)
+  end
 
+  def find_statewide_test(district_name)
+    str.find_by_name(district_name)
+  end
 
-    #ORIGINAL LOAD DATA METHOD
-    # er.load_data(data)
-    # data[:enrollment].each do |school_type, csv|
-    #   file = csv
-    #   contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-    #     # unless districts.include?(row[:location])
-    #       new_enrollment = er.find_by_name(row[:location])
-    #       d = District.new(name: row[:location].upcase)
-    #       d.enrollment = new_enrollment
-    #       districts.merge!(row[:location].upcase => d)
-    #     # end
-    #   end
-    # end
-
-
-#EXPERIMENTAL LOAD DATA METHOD
-# def load_data(data)
-#   data.each do |category, subcategory|
-#     repository = ""
-#     if category == :enrollment
-#       repository = er
-#     elsif category == :statewide_testing
-#       repository = str
-#     end
-#     repository.load_data(data)
-#     subcategory.each do |attribute, csv|
-#       file = csv
-#
-#       contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-#         name = row[:location].upcase
-#         if districts.include?(name)
-#           d = find_by_name(name)
-#         else
-#           d = create_new_district(name)
-#         end
-#         new_data = repository.find_by_name(name)
-#           if category == :enrollment
-#             d.enrollment = new_data
-#           elsif category == :statewide_test
-#             d.statewide_enrollment = new_data
-#           end
-#         districts.merge!(name => d)
-#       end
-#     end
-#   end
-# end
-
-
-  # def create_new_district(name)
-  #   District.new(name: name)
-  # end
-
+  def find_economic_profile(district_name)
+    epr.find_by_name(district_name)
+  end
 
   def find_by_name(name)
     districts[name.upcase]
@@ -158,3 +60,52 @@ class DistrictRepository
 
 
 end
+
+
+#
+#   def load_data(data)
+#   data.each do |category, data_collection|
+#     if category == :enrollment
+#       er.load_data(data)
+#       data[:enrollment].each do |data_element, csv|
+#         file = csv
+#         CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+#           # unless districts.include?(row[:location])
+#             name = row[:location].upcase
+#             new_enrollment = er.find_by_name(name)
+#             d = District.new(name: name)
+#             create_new_enrollment(d, new_enrollment)
+#             districts.merge!(name => d)
+#           # end
+#         end
+#       end
+#     elsif category == :statewide_testing
+#       str.load_data(data)
+#       data[:statewide_testing].each do |data_element, csv|
+#         file = csv
+#         CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+#           # unless districts.include?(name)
+#             name = row[:location].upcase
+#             new_statewide_test = str.find_by_name(name)
+#             #if district exists in districts, just use that district
+#             d = District.new(name: name)
+#             create_new_statewide_test(d, new_statewide_test)
+#             districts.merge!(name => d)
+#           # end
+#         end
+#       end
+#     elsif category == :economic_profile
+#       epr.load_data(data)
+#       data[:economic_profile].each do |data_element, csv|
+#         file = csv
+#         CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+#           name = row[:location].upcase
+#           new_economic_profile = epr.find_by_name(name)
+#           d = District.new(name: name)
+#           create_new_economic_profile(d, new_economic_profile)
+#           districts.merge!(name => d)
+#         end
+#       end
+#     end
+#   end
+# end
