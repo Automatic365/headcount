@@ -8,5 +8,5 @@ module HelperMethods
   def calculate_average(data)
     data.reduce(0, :+) / data.count
   end
-  
+
 end

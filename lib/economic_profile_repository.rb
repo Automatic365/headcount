@@ -12,11 +12,20 @@ class EconomicProfileRepository
 
         file = csv
         contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-
+          require "pry"; binding.pry
           name = row[:location].upcase
           dataformat = row[:dataformat]
           data = row[:data]
           timeframe = row[:timeframe]
+
+          name, dataformat, data, timeframe = parse_row(row)
+          #
+          # one, two, three = [1,2,3]
+          def parse_row(row)
+            [row[:location].upcase, row[:timeframe], row[:data], row[:dataformat]]
+          end
+
+
 
           if category == :free_or_reduced_price_lunch
             if dataformat == "Percent"
@@ -70,6 +79,7 @@ class EconomicProfileRepository
           #     end
           #   end
 
+          
           elsif category == :median_household_income
             if all_data.has_key?(name)
               if all_data[name].has_key?(category)

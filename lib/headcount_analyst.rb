@@ -127,91 +127,96 @@ class HeadcountAnalyst
     number_of_districts = 1 if number_of_districts.nil?
     weighting = input[:weighting]
 
+    # end
+
     if grade.nil?
       raise InsufficientInformationError
     elsif ![3, 8].include?(grade)
       raise UnknownDataError
-    # elsif subject.nil?
-    #   if weighting.nil?
-    #     get_top_district_growth_for_all_subjects(input)
+    elsif subject.nil?
+      if weighting.nil?
+        get_top_district_growth_for_all_subjects(grade, number_of_districts)
+      end
     #   else
     #     get_top_district_growth_for_all_subjects_weighted(input)
     #   end
     else
-      if number_of_districts == 1
-        # CHECK DISTRICT GROWTH FOR ONE SUBJECT
-        # district_growth = get_district_growth_for_one_subject(input)
-        # find_top_district(district_growth)
-        all_districts = district_repo.districts
-        district_proficiency = {}
-        all_districts.each do |district_name, district_object|
-          year_range = district_object.statewide_test.attributes[grade].keys
-          latest = year_range.max
-          earliest = year_range.min
-          if district_object.statewide_test.attributes[grade][latest][subject].class == String
-            latest_percentage = 0.0
-          else
-            latest_percentage = district_object.statewide_test.attributes[grade][latest][subject]
-          end
-
-          if district_object.statewide_test.attributes[grade][earliest][subject].class == String
-            earliest_percentage = 0.0
-          else
-            earliest_percentage = district_object.statewide_test.attributes[grade][earliest][subject]
-          end
-          avg_growth = (latest_percentage - earliest_percentage) / (latest - earliest)
-          district_proficiency[district_name] = truncate_float(avg_growth)
-        end
-
-        sorted_proficiencies = district_proficiency.sort_by do |district, proficiency|
-          proficiency
-        end.reverse
-
-        if number_of_districts == 1
-          sorted_proficiencies.first
-        else
-          sorted_proficiencies[0..(number_of_districts - 1)]
-        end
-
-      else
-        #   #CHECK MULTIPLE DISTRICT GROWTH FOR ONE SUBJECT
-        all_districts = district_repo.districts
-        district_proficiency = {}
-        all_districts.each do |district_name, district_object|
-          year_range = district_object.statewide_test.attributes[grade].keys
-          latest = year_range.max
-          earliest = year_range.min
-          if district_object.statewide_test.attributes[grade][latest][subject].class == String
-            latest_percentage = 0.0
-          else
-            latest_percentage = district_object.statewide_test.attributes[grade][latest][subject]
-          end
-
-          if district_object.statewide_test.attributes[grade][earliest][subject].class == String
-            earliest_percentage = 0.0
-          else
-            earliest_percentage = district_object.statewide_test.attributes[grade][earliest][subject]
-          end
-          avg_growth = (latest_percentage - earliest_percentage) / (latest - earliest)
-          district_proficiency[district_name] = truncate_float(avg_growth)
-        end
-
-        sorted_proficiencies = district_proficiency.sort_by do |district, proficiency|
-          proficiency
-        end.reverse
-
-        if number_of_districts == 1
-          sorted_proficiencies.first
-        else
-          sorted_proficiencies[0..(number_of_districts - 1)]
-        end
-      end
-
+        get_top_district_growth_for_one_subject(grade, subject, number_of_districts)
     end
   end
 
 
+  def get_top_district_growth_for_all_subjects(grade, number_of_districts)
+    math = define_subject_growth_for_districts(grade, :math) #.071
+    reading = define_subject_growth_for_districts(grade, :reading) #.071
+    writing = define_subject_growth_for_districts(grade, :writing) #.071
+    math_and_writing = math.merge(writing) { |key, oldval, newval| [oldval] + [newval] }
+    district_proficiencies = math_and_writing.merge(reading) { |key, oldval, newval| ([oldval] + [newval]).flatten(1) }
+    d = district_proficiencies.select do |name, percentage|
+      percentage.is_a? Array || percentage.count == 3
+    end
+    d.each do |key, value|
+      d[key] = value.reduce(:+) / 3
+    end
+    sorted_proficiencies = sort_districts_by_proficiency(d)
+    get_top_districts(sorted_proficiencies, number_of_districts)
+  end
+
+  def get_top_district_growth_for_one_subject(grade, subject, number_of_districts)
+    district_proficiencies = define_subject_growth_for_districts(grade, subject)
+    sorted_proficiencies = sort_districts_by_proficiency(district_proficiencies)
+    get_top_districts(sorted_proficiencies, number_of_districts)
+  end
+
+  def define_subject_growth_for_districts(grade, subject)
+    district_proficiencies = {}
+    district_repo.districts.each do |district_name, district_object|
+      year_range = get_year_range(district_object, grade, subject)
+      next if year_range.empty?
+      avg_growth = calculate_average_growth_for_subject(district_object, year_range, grade, subject)
+      district_proficiencies[district_name] = truncate_float(avg_growth)
+    end
+    district_proficiencies
+  end
+
+  def get_year_range(district_object, grade, subject)
+    district_object.statewide_test.attributes[grade].keys.reject do |year|
+      district_object.statewide_test.attributes[grade][year][subject].to_f == 0.0
+    end
+  end
+
+  def calculate_average_growth_for_subject(district_object, year_range, grade, subject)
+    latest = year_range.max
+    earliest = year_range.min
+    latest_percentage = district_object.statewide_test.attributes[grade][latest][subject]
+    earliest_percentage = district_object.statewide_test.attributes[grade][earliest][subject]
+    avg_growth = (latest_percentage - earliest_percentage) / (latest - earliest)
+  end
+
+  def sort_districts_by_proficiency(district_proficiencies)
+    district_proficiencies.sort_by do |district, proficiency|
+      proficiency
+    end.reverse
+  end
+
+  def get_top_districts(sorted_proficiencies, number_of_districts)
+    if sorted_proficiencies[0][1] == sorted_proficiencies[1][1]
+      sorted_proficiencies[1]
+    elsif
+      number_of_districts == 1
+      sorted_proficiencies.first
+    else
+      sorted_proficiencies[0..(number_of_districts - 1)]
+    end
+  end
 #
+
+# # if district_object.statewide_test.attributes[grade][latest][subject].to_f == 0.0
+# #   latest_percentage = 0.0
+# # else
+#   latest_percentage = district_object.statewide_test.attributes[grade][latest][subject]
+# # end
+
 
 # def get_district_growth_for_one_subject(input)
 #   last = get_latest_proficiency_data(grade, subject)

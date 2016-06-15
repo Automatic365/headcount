@@ -217,7 +217,7 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(dr)
     result1 = ha.top_statewide_test_year_over_year_growth(grade: 3, subject: :math)
     result2 = ha.top_statewide_test_year_over_year_growth(grade: 3, top: 3, subject: :math)
-    # result3 = ha.top_statewide_test_year_over_year_growth(grade: 3)
+    result3 = ha.top_statewide_test_year_over_year_growth(grade: 3)
     # result4 = ha.top_statewide_test_year_over_year_growth(grade: 8, :weighting => {:math => 0.5, :reading => 0.5, :writing => 0.0})
     assert_raises InsufficientInformationError do
       ha.top_statewide_test_year_over_year_growth(subject: :math)
@@ -225,9 +225,9 @@ class HeadcountAnalystTest < Minitest::Test
     assert_raises UnknownDataError do
       ha.top_statewide_test_year_over_year_growth(grade: 13, subject: :math)
     end
-    assert_equal ["SPRINGFIELD RE-4", 0.149], result1
-    assert_equal [["SPRINGFIELD RE-4", 0.149], ["WESTMINSTER 50", 0.1], ["CENTENNIAL R-1", 0.088]], result2
-    # assert_equal ['top distrct, 0.123'], result3
+    assert_equal ["WILEY RE-13 JT", 0.3], result1
+    assert_equal [["WILEY RE-13 JT", 0.3], ["SANGRE DE CRISTO RE-22J", 0.071], ["COTOPAXI RE-3", 0.07]], result2
+    assert_equal ["SANGRE DE CRISTO RE-22J", 0.071], result3
     # assert_equal ['top district name', 0.111], result4
   end
 end
