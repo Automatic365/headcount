@@ -54,7 +54,7 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(dr)
     district = "ACADEMY 20"
     school_type = :kindergarten_participation
-    assert_equal 0.37261500000000003, ha.get_average_for_attribute(district, school_type)
+    assert_equal 0.37261500000000003, ha.get_attribute_avg(district, school_type)
   end
 
   def test_calculate_variance
@@ -87,7 +87,7 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(dr)
     district = "Academy 20"
     school_type = :kindergarten_participation
-    assert_equal 1.0188810806376638, ha.calculate_variance_for_attribute_against_state(district, school_type)
+    assert_equal 1.0188810806376638, ha.variance_against_state(district, school_type)
   end
 
   def test_compare_participation_rate_trend
