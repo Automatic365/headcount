@@ -15,18 +15,18 @@ class DistrictRepository
     @epr = EconomicProfileRepository.new
   end
 
-def load_data(data)
-  data.each do |category, data_collection|
-    if category == :enrollment
-      er.load_data(data)
-    elsif category == :statewide_testing
-      str.load_data(data)
-    elsif category == :economic_profile
-      epr.load_data(data)
+  def load_data(data)
+    data.each do |category, data_collection|
+      if category == :enrollment
+        er.load_data(data)
+      elsif category == :statewide_testing
+        str.load_data(data)
+      elsif category == :economic_profile
+        epr.load_data(data)
+      end
     end
+    create_districts
   end
-  create_districts
-end
 
   def create_districts
     er.enrollments.keys.each do |name|

@@ -18,6 +18,18 @@ class EconomicProfileTest < Minitest::Test
     end
   end
 
+  def test_get_year_ranges
+    ep = EconomicProfile.new({:median_household_income => {[2005, 2009] => 50000, [2008, 2014] => 60000}})
+    result = {[2005, 2006, 2007, 2008, 2009]=>50000, [2008, 2009, 2010, 2011, 2012, 2013, 2014]=>60000}
+    assert_equal result, ep.get_year_ranges
+  end
+
+  def test_get_income_in_year
+    ep = EconomicProfile.new({:median_household_income => {[2005, 2009] => 50000, [2008, 2014] => 60000}})
+    year_ranges = {[2005, 2006, 2007, 2008, 2009]=>50000, [2008, 2009, 2010, 2011, 2012, 2013, 2014]=>60000}
+    assert_equal [50000, 60000], ep.check_ranges_for_income_in_year(year_ranges, 2008)
+  end
+
   def test_median_household_income_average
     ep = EconomicProfile.new({:median_household_income => {[2005, 2009] => 50000, [2008, 2014] => 60000}})
     assert_equal 55000, ep.median_household_income_average
@@ -55,6 +67,10 @@ class EconomicProfileTest < Minitest::Test
     end
   end
 
-
+  def year_is_valid?
+    ep = EconomicProfile.new({:title_i => {2015 => 0.543}})
+    assert year_is_valid?(:title_i, 2015)
+    refute year_is_valid?(:free_or_reduced_price_lunch, 2015)
+  end
 
 end
