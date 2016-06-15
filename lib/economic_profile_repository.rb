@@ -18,6 +18,13 @@ class EconomicProfileRepository
           data = row[:data]
           timeframe = row[:timeframe]
 
+          # name, data_format, data, timeframe = parse_row(row, type)
+          #
+          # one, two, three = [1,2,3]
+
+
+
+
           if category == :free_or_reduced_price_lunch
             if dataformat == "Percent"
               percentage = data.to_f

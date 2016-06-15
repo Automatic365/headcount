@@ -22,7 +22,7 @@ class StatewideTestRepository
         name = row[:location].upcase
         subject = row[:score].downcase.to_sym if row.include?(:score)
         year = row[:timeframe].to_i
-        if row[:data] == "N/A"
+        if row[:data].to_f == 0.0
           percentage = "N/A"
         else
           percentage = row[:data].to_f
@@ -34,6 +34,30 @@ class StatewideTestRepository
           race = row[:race_ethnicity].tr(" ", "_").downcase.to_sym
           end
         end
+
+
+
+# if name_race_year_accounted_for?
+#   all_data[name][race][year][category] = percentage #set category equal to percentage
+# end
+# if all_data[name] && all_data[name][race] && all_data[name][race][year].nil?
+#   all_data[name][race][year] = {category => percentage} #set category equal to percentage
+# end
+# if
+#   all_data[name][race] = {year => {category => percentage}} #set race data
+# end
+# if
+#   all_data[name] = {race => {year => {category => percentage}}} #set district data
+# end
+# if
+#   all_data[name] = {category => {year => {subject => percentage}}} #set district data
+# end
+#
+# def name_race_year_accounted_for?(name,race,year)
+#   all_data[name] && all_data[name][race] && all_data[name][race][year]
+# end
+
+
 
       if subjects.include?(category) #if category is math, reading, or writing
         if all_data.has_key?(name)  #if all_data contains the district name

@@ -22,7 +22,7 @@ class DistrictRepository
         data[:enrollment].each do |data_element, csv|
           file = csv
           contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-            # unless districts.include?(row[:location])
+            # unless districts.keys.include?(row[:location])
               name = row[:location].upcase
               new_enrollment = er.find_by_name(name)
               d = District.new(name: name)
