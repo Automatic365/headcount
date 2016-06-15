@@ -126,55 +126,73 @@ class HeadcountAnalyst
     number_of_districts = input[:top]
     number_of_districts = 1 if number_of_districts.nil?
     weighting = input[:weighting]
-
-    # end
+    if weighting.nil?
+      weighting = {}
+      weighting[:math] = 1.0
+      weighting[:reading] = 1.0
+      weighting[:writing] = 1.0
+    end
 
     if grade.nil?
       raise InsufficientInformationError
     elsif ![3, 8].include?(grade)
       raise UnknownDataError
     elsif subject.nil?
-      if weighting.nil?
-        get_top_district_growth_for_all_subjects(grade, number_of_districts)
+      if input[:weighting].nil?
+        get_top_district_growth_for_all_subjects(grade, number_of_districts, weighting)
+      else
+        get_top_district_growth_for_all_subjects(grade, number_of_districts, weighting)
       end
-    #   else
-    #     get_top_district_growth_for_all_subjects_weighted(input)
-    #   end
     else
-        get_top_district_growth_for_one_subject(grade, subject, number_of_districts)
+        get_top_district_growth_for_one_subject(grade, subject, number_of_districts, weighting[subject])
     end
   end
 
-
-  def get_top_district_growth_for_all_subjects(grade, number_of_districts)
-    math = define_subject_growth_for_districts(grade, :math) #.071
-    reading = define_subject_growth_for_districts(grade, :reading) #.071
-    writing = define_subject_growth_for_districts(grade, :writing) #.071
+  def get_top_district_growth_for_all_subjects(grade, number_of_districts, weighting)
+    math = define_subject_growth_for_districts(grade, :math, weighting[:math]) #.071
+    reading = define_subject_growth_for_districts(grade, :reading, weighting[:reading]) #.071
+    writing = define_subject_growth_for_districts(grade, :writing, weighting[:writing]) #.071
     math_and_writing = math.merge(writing) { |key, oldval, newval| [oldval] + [newval] }
     district_proficiencies = math_and_writing.merge(reading) { |key, oldval, newval| ([oldval] + [newval]).flatten(1) }
-    d = district_proficiencies.select do |name, percentage|
+    proficiencies = district_proficiencies.select do |name, percentage|
       percentage.is_a? Array || percentage.count == 3
     end
-    d.each do |key, value|
-      d[key] = value.reduce(:+) / 3
-    end
+    d = calculate_average_proficiencies(proficiencies, weighting)
     sorted_proficiencies = sort_districts_by_proficiency(d)
     get_top_districts(sorted_proficiencies, number_of_districts)
   end
 
-  def get_top_district_growth_for_one_subject(grade, subject, number_of_districts)
-    district_proficiencies = define_subject_growth_for_districts(grade, subject)
+  def calculate_average_proficiencies(proficiencies, weighting)
+    if is_weighted?(weighting)
+      calculate_by_weight(proficiencies, weighting, 1.0)
+    else
+      calculate_by_weight(proficiencies, weighting, 3.0)
+    end
+  end
+
+  def is_weighted?(weighting)
+    weighting.values.reduce(:+) == 1.0
+  end
+
+  def calculate_by_weight(proficiencies, weighting, number)
+    proficiencies.each do |key, value|
+      proficiencies[key] = value.reduce(:+) / number
+    end
+  end
+
+  def get_top_district_growth_for_one_subject(grade, subject, number_of_districts, weighting)
+    district_proficiencies = define_subject_growth_for_districts(grade, subject, weighting)
     sorted_proficiencies = sort_districts_by_proficiency(district_proficiencies)
     get_top_districts(sorted_proficiencies, number_of_districts)
   end
 
-  def define_subject_growth_for_districts(grade, subject)
+  def define_subject_growth_for_districts(grade, subject, weight)
     district_proficiencies = {}
     district_repo.districts.each do |district_name, district_object|
       year_range = get_year_range(district_object, grade, subject)
       next if year_range.empty?
       avg_growth = calculate_average_growth_for_subject(district_object, year_range, grade, subject)
-      district_proficiencies[district_name] = truncate_float(avg_growth)
+      district_proficiencies[district_name] = truncate_float(avg_growth * weight)
     end
     district_proficiencies
   end
