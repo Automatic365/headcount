@@ -53,7 +53,16 @@ class StatewideTestRepository
   end
 
   def compile_data(all_data, name, group, year, set, percentage)
-    if all_data[name] && all_data[name][group] && all_data[name][group][year]
+    data = all_data, name, group, year, set, percentage
+    all_data[name][group][year][set] = percentage if year_populated?(data)
+    all_data[name][group][year][set] = percentage if group_populated?(data)
+    all_data[name][group][year][set] = percentage if name_populated?(data)
+    all_data[name][group][year][set] = percentage if set_populated?(data)
+
+
+
+
+    all_data[name] && all_data[name][group] && all_data[name][group][year]
       all_data[name][group][year][set] = percentage
     end
     if all_data[name] && all_data[name][group] && all_data[name][group][year].nil?

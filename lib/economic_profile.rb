@@ -44,11 +44,8 @@ class EconomicProfile
   end
 
   def children_in_poverty_in_year(year)
-    if year_is_valid?(:children_in_poverty, year)
-      truncate_float(attributes[:children_in_poverty][year])
-    else
-      raise UnknownDataError
-    end
+    raise UnknownDataError unless year_is_valid?(:children_in_poverty, year)
+    truncate_float(attributes[:children_in_poverty][year])
   end
 
   def free_or_reduced_price_lunch_percentage_in_year(year)

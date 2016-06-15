@@ -65,10 +65,11 @@ class HeadcountAnalyst
   end
 
   def count_positive_correlations(correlations)
-    correlations.reduce(0) do |sum, correlation|
-      sum += 1 if correlation == true
-      sum
-    end
+    correlations.count { |i| i == true }
+    # correlations.reduce(0) do |sum, correlation|
+    #   sum += 1 if correlation == true
+    #   sum
+    # end
   end
 
   def find_correlations(districts)
@@ -98,6 +99,7 @@ class HeadcountAnalyst
   end
 
   def kindergarten_participation_correlates_with_high_school_graduation(name)
+
     if name.keys[0] == :for
       name = name[:for].upcase
       if name == "STATEWIDE"
