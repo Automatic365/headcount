@@ -1,3 +1,6 @@
+require_relative 'economic_profile'
+require 'csv'
+
 class EconomicProfileRepository
 
     attr_reader :economic_profiles
@@ -12,20 +15,17 @@ class EconomicProfileRepository
 
         file = csv
         contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-          require "pry"; binding.pry
           name = row[:location].upcase
           dataformat = row[:dataformat]
           data = row[:data]
           timeframe = row[:timeframe]
 
-          name, dataformat, data, timeframe = parse_row(row)
-          #
-          # one, two, three = [1,2,3]
-          def parse_row(row)
-            [row[:location].upcase, row[:timeframe], row[:data], row[:dataformat]]
-          end
-
-
+          # name, dataformat, data, timeframe = parse_row(row)
+          # #
+          # # one, two, three = [1,2,3]
+          # def parse_row(row)
+          #   [row[:location].upcase, row[:timeframe], row[:data], row[:dataformat]]
+          # end
 
           if category == :free_or_reduced_price_lunch
             if dataformat == "Percent"
@@ -43,73 +43,23 @@ class EconomicProfileRepository
             percentage  = data.to_f
           end
 
-
-
           if category == :free_or_reduced_price_lunch
-              if all_data.has_key?(name)
-                if all_data[name].has_key?(category)
-                  if all_data[name][category].has_key?(year)
-                    if dataformat == "Percent"
-                      all_data[name][category][year][:percentage] = percentage
-                    else
-                      all_data[name][category][year][:total] = total
-                    end
-                  else
-                    all_data[name][category][year] = {:percentage => percentage, :total => total}
-                  end
-                else
-                  all_data[name][category] = {year => {:percentage => percentage, :total => total}}
-                end
-              else
-                all_data[name] = {category => {year => {:percentage => percentage, :total => total}}}
-              end
-          # elsif dataformat == "Number"
-          #     if all_data.has_key?(name)
-          #       if all_data[name].has_key?(category)
-          #         if all_data[name][category].has_key?(year)
-          #           all_data[name][category][year][:total] = total
-          #         else
-          #           all_data[name][category][year] = {:total => total}
-          #         end
-          #       else
-          #         all_data[name][category] = {year => {:total => total}}
-          #       end
-          #     else
-          #       all_data[name] = {category => {year => {:total => total}}}
-          #     end
-          #   end
-
-          
+            compile_lunch_data(all_data, name, category, year, percentage, total, dataformat)
           elsif category == :median_household_income
-            if all_data.has_key?(name)
-              if all_data[name].has_key?(category)
-                all_data[name][category][years] = income
-              else
-                all_data[name][category] = {years => income}
-              end
-            else
-              all_data[name] = {category => {years => income}}
-            end
-          else
-            if all_data.has_key?(name)
-              if all_data[name].has_key?(category)
-                all_data[name][category][year] = percentage
-              else
-                all_data[name][category] = {year => percentage}
-              end
-            else
-              all_data[name] = {category => {year => percentage}}
-            end
+            compile_other_data(all_data, name, category, years, income)
+          elsif category == :title_i || category == :children_in_poverty
+            compile_other_data(all_data, name, category, year, percentage)
           end
         end
-        create_economic_profiles(all_data)
       end
+      create_economic_profiles(all_data)
+    end
+
       #name => district
       #{category => {year range => amount}}
       #{category} => {year => percentage}
       #{category} => {year => {:percentage => percentage, :total => total}}
       #{category} => {year => percentage}
-    end
 
     def find_by_name(name)
       economic_profiles[name.upcase]
@@ -121,5 +71,33 @@ class EconomicProfileRepository
       end
     end
 
+    def compile_other_data(all_data, name, category, time, stats)
+      if all_data[name] && all_data[name][category]
+        all_data[name][category][time] = stats
+      end
+      if all_data[name] && all_data[name][category].nil?
+        all_data[name][category] = {time => stats}
+      end
+      if all_data[name].nil?
+        all_data[name] = {category => {time => stats}}
+      end
+    end
 
+    def compile_lunch_data(all_data, name, category, year, percentage, total, dataformat)
+      if all_data[name] && all_data[name][category] && all_data[name][category][year] && dataformat == "Percent"
+        all_data[name][category][year][:percentage] = percentage
+      end
+      if all_data[name] && all_data[name][category] && all_data[name][category][year] && dataformat == "Number"
+        all_data[name][category][year][:total] = total
+      end
+      if all_data[name] && all_data[name][category] && all_data[name][category][year].nil?
+        all_data[name][category][year] = {:percentage => percentage, :total => total}
+      end
+      if all_data[name] && all_data[name][category].nil?
+        all_data[name][category] = {year => {:percentage => percentage, :total => total}}
+      end
+      if all_data[name].nil?
+        all_data[name] = {category => {year => {:percentage => percentage, :total => total}}}
+      end
+    end
 end
