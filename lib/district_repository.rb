@@ -3,6 +3,7 @@ require 'pry'
 require_relative 'district'
 require_relative 'enrollment_repository'
 require_relative 'statewide_test_repository'
+require_relative 'economic_profile_repository'
 
 class DistrictRepository
   attr_reader :districts, :er, :str, :epr
@@ -22,7 +23,7 @@ class DistrictRepository
         data[:enrollment].each do |data_element, csv|
           file = csv
           contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-            # unless districts.keys.include?(row[:location])
+            # unless districts.include?(row[:location])
               name = row[:location].upcase
               new_enrollment = er.find_by_name(name)
               d = District.new(name: name)
@@ -61,6 +62,34 @@ class DistrictRepository
       end
     end
   end
+
+#  NEW IDEAS
+  # def load_data(data)
+  #   data.each do |category, data_collection|
+  #     if category == :enrollment
+  #       create_new_district(data, er, category)
+  #     elsif category == :statewide_testing
+  #       create_new_district(data, str, category)
+  #     elsif category == :economic_profile
+  #       create_new_district(data, epr, category)
+  #     end
+  #   end
+  # end
+  #
+  # def create_new_district(data, repository, category)
+  #   repository.load_data(data)
+  #   data[category].each do |data_element, csv|
+  #     file = csv
+  #     contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+  #       name = row[:location].upcase
+  #       new_instance = repository.find_by_name(name)
+  #       d = District.new(name: name)
+  #       d.category = new_instance
+  #       districts.merge!(name => d)
+  #     end
+  #   end
+  # end
+
 
     #ORIGINAL LOAD DATA METHOD
     # er.load_data(data)

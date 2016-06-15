@@ -21,15 +21,7 @@ class EnrollmentRepository
         year = row[:timeframe].to_i
         percentage = row[:data].to_f
 
-        if all_data.has_key?(name)
-          if all_data[name].has_key?(school_type)
-            all_data[name][school_type][year] = percentage
-          else
-            all_data[name][school_type] = {year => percentage}
-          end
-        else
-          all_data[name] = {:name => name, school_type => {year => percentage}}
-        end
+        compile_data(all_data, name, school_type, year, percentage)
       end
     end
     create_enrollments(all_data)
@@ -41,40 +33,21 @@ class EnrollmentRepository
     end
   end
 
-      # all_data
-      # assert_equal ({:name => "ACADEMY 20",
-      # :kindergarten_participation => {2010 => 0.3915, 2011 => 0.35356, 2012 => 0.2677},
-      # :high_school_graduation => {2010 = 0.895, 2011 => 0.895, 2012 => 0.889, 2013 => 0.913, 2014 => 0.898}})
-
-
-  # def load_data(data)
-  #   file = data[:enrollment][:kindergarten]
-  #
-  #   file_data = CSV.open(file, headers: true, header_converters: :symbol)
-  #
-  #   all_data = file_data.map do |row|
-  #     { :name => row[:location].upcase, row[:timeframe].to_i => row[:data].to_f  }
-  #     # unless enrollments.keys.include?(row[:location].upcase)
-  #     #   enrollments.merge!(row[:location] => Enrollment.new(name: row[:location], row[:timeframe].to_i => row[:data].to_f))
-  #   end
-  #
-  #   enrollment_by_year = all_data.group_by do |row|
-  #     row[:name]
-  #   end
-  #   enrollment_data = enrollment_by_year.map do |name, years|
-  #     merged = years.reduce({}, :merge)
-  #     merged.delete(:name)
-  #     { name: name,
-  #       kindergarten_participation: merged}
-  #   end
-  #
-  #   enrollment_data.each do |enrollment|
-  #     enrollments.merge!(enrollment[:name] => Enrollment.new(enrollment))
-  #   end
-  # end
-
   def find_by_name(name)
     enrollments[name.upcase]
+  end
+
+  def compile_data(all_data, name, school_type, year, percentage)
+    if all_data[name] && all_data[name][school_type]
+      all_data[name][school_type][year] = percentage
+    end
+    if all_data[name] && all_data[name][school_type].nil?
+      all_data[name][school_type] = {year => percentage}
+    end
+    if all_data[name].nil?
+      all_data[name] = {:name => name, school_type => {year => percentage}}
+    end
+
   end
 
 end

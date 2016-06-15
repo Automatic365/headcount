@@ -18,61 +18,34 @@ class StatewideTestRepository
 
       file = csv
 
-      contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+       CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
         name = row[:location].upcase
         subject = row[:score].downcase.to_sym if row.include?(:score)
         year = row[:timeframe].to_i
+
         if row[:data].to_f == 0.0
           percentage = "N/A"
         else
           percentage = row[:data].to_f
         end
-        if row.include?(:race_ethnicity)
+
+
+
+        if subjects.include?(category)
           if row[:race_ethnicity] == "Hawaiian/Pacific Islander"
           race = :pacific_islander
           else
           race = row[:race_ethnicity].tr(" ", "_").downcase.to_sym
           end
-        end
-
-
-
-# if name_race_year_accounted_for?
-#   all_data[name][race][year][category] = percentage #set category equal to percentage
-# end
-
-        if subjects.include?(category)
-          if all_data[name] && all_data[name][race] && all_data[name][race][year]
-            all_data[name][race][year][category] = percentage
-          end
-          if all_data[name] && all_data[name][race] && all_data[name][race][year].nil?
-            all_data[name][race][year] = {category => percentage}
-          end
-          if all_data[name] && all_data[name][race].nil?
-            all_data[name][race] = {year => {category => percentage}}
-          end
-          if all_data[name].nil?
-            all_data[name] = {race => {year => {category => percentage}}}
-          end
+          compile_data(all_data, name, race, year, category, percentage)
         else
-          if all_data[name] && all_data[name][category] && all_data[name][category][year]
-            all_data[name][category][year][subject] = percentage
-          end
-          if all_data[name] && all_data[name][category] && all_data[name][category][year].nil?
-            all_data[name][category][year] = {subject => percentage}
-          end
-          if all_data[name] && all_data[name][category].nil?
-            all_data[name][category] = {year => {subject => percentage}}
-          end
-          if all_data[name].nil?
-            all_data[name] = {category => {year => {subject => percentage}}}
-          end
+          compile_data(all_data, name, category, year, subject, percentage)
         end
+
       end
     end
-  create_statewide_tests(all_data)
-end
-
+    create_statewide_tests(all_data)
+  end
 
 
   def create_statewide_tests(data)
@@ -85,6 +58,21 @@ end
     statewide_tests[name.upcase]
   end
 
+
+  def compile_data(all_data, name, group, year, set, percentage)
+    if all_data[name] && all_data[name][group] && all_data[name][group][year]
+      all_data[name][group][year][set] = percentage
+    end
+    if all_data[name] && all_data[name][group] && all_data[name][group][year].nil?
+      all_data[name][group][year] = {set => percentage}
+    end
+    if all_data[name] && all_data[name][group].nil?
+      all_data[name][group] = {year => {set => percentage}}
+    end
+    if all_data[name].nil?
+      all_data[name] = {group => {year => {set => percentage}}}
+    end
+  end
 
             #{name => district,
             #grade => {year => {subject => percentage}},
