@@ -40,58 +40,40 @@ class StatewideTestRepository
 # if name_race_year_accounted_for?
 #   all_data[name][race][year][category] = percentage #set category equal to percentage
 # end
-# if all_data[name] && all_data[name][race] && all_data[name][race][year].nil?
-#   all_data[name][race][year] = {category => percentage} #set category equal to percentage
-# end
-# if
-#   all_data[name][race] = {year => {category => percentage}} #set race data
-# end
-# if
-#   all_data[name] = {race => {year => {category => percentage}}} #set district data
-# end
-# if
-#   all_data[name] = {category => {year => {subject => percentage}}} #set district data
-# end
-#
-# def name_race_year_accounted_for?(name,race,year)
-#   all_data[name] && all_data[name][race] && all_data[name][race][year]
-# end
 
-
-
-      if subjects.include?(category) #if category is math, reading, or writing
-        if all_data.has_key?(name)  #if all_data contains the district name
-          if all_data[name].has_key?(race) #if the district name contains a race
-            if all_data[name][race].has_key?(year) #if the race contains a year
-              all_data[name][race][year][category] = percentage #set category equal to percentage
-            else
-              all_data[name][race][year] = {category => percentage} #set year data
-            end
-          else
-            all_data[name][race] = {year => {category => percentage}} #set race data
+        if subjects.include?(category)
+          if all_data[name] && all_data[name][race] && all_data[name][race][year]
+            all_data[name][race][year][category] = percentage
+          end
+          if all_data[name] && all_data[name][race] && all_data[name][race][year].nil?
+            all_data[name][race][year] = {category => percentage}
+          end
+          if all_data[name] && all_data[name][race].nil?
+            all_data[name][race] = {year => {category => percentage}}
+          end
+          if all_data[name].nil?
+            all_data[name] = {race => {year => {category => percentage}}}
           end
         else
-          all_data[name] = {race => {year => {category => percentage}}} #set district data
-        end
-      else
-        if all_data.has_key?(name) #if all_data contains the district name
-          if all_data[name].has_key?(category) #if all_data contains a category
-            if all_data[name][category].has_key?(year) #if the category contains a year
-              all_data[name][category][year][subject] = percentage #set subject equal to percentage
-            else
-              all_data[name][category][year] = {subject => percentage} #set year data
-            end
-          else
-            all_data[name][category] = {year => {subject => percentage}} #set category data
+          if all_data[name] && all_data[name][category] && all_data[name][category][year]
+            all_data[name][category][year][subject] = percentage
           end
-        else
-          all_data[name] = {category => {year => {subject => percentage}}} #set district data
+          if all_data[name] && all_data[name][category] && all_data[name][category][year].nil?
+            all_data[name][category][year] = {subject => percentage}
+          end
+          if all_data[name] && all_data[name][category].nil?
+            all_data[name][category] = {year => {subject => percentage}}
+          end
+          if all_data[name].nil?
+            all_data[name] = {category => {year => {subject => percentage}}}
+          end
         end
       end
     end
-  end
   create_statewide_tests(all_data)
 end
+
+
 
   def create_statewide_tests(data)
     data.each do |name, district_data|
