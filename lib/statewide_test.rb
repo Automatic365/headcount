@@ -6,18 +6,15 @@ attr_reader :attributes, :grades, :races, :subjects
 
   def initialize(attributes)
     @attributes = attributes
-    @grades = [3, 8]
-    @races = [:asian, :black, :pacific_islander, :hispanic, :native_american, :two_or_more, :white]
-    @subjects = [:math, :reading, :writing]
+    @grades     = [3, 8]
+    @subjects   = [:math, :reading, :writing]
+    @races      = [:asian, :black, :pacific_islander, :hispanic,
+                  :native_american, :two_or_more, :white]
   end
 
   def name
     attributes[:name].upcase
   end
-
-  # def raise_unknown_data_error
-  #   raise UnknownDataError
-  # end
 
   def proficient_by_grade(grade)
     if grades.include?(grade)

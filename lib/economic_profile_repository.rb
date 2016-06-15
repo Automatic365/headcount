@@ -14,11 +14,11 @@ class EconomicProfileRepository
       data[:economic_profile].each do |category, csv|
 
         file = csv
-        contents = CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-          name = row[:location].upcase
-          dataformat = row[:dataformat]
-          data = row[:data]
-          timeframe = row[:timeframe]
+        CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+          name        = row[:location].upcase
+          dataformat  = row[:dataformat]
+          data        = row[:data]
+          timeframe   = row[:timeframe]
 
           # name, dataformat, data, timeframe = parse_row(row)
           # #
@@ -27,16 +27,8 @@ class EconomicProfileRepository
           #   [row[:location].upcase, row[:timeframe], row[:data], row[:dataformat]]
           # end
 
-          if category == :free_or_reduced_price_lunch
-            if dataformat == "Percent"
-              percent = data.to_f
-            elsif dataformat == "Number"
-              total = data.to_i
-            end
-          end
-
           if category == :median_household_income
-            years = timeframe.split("-").map { |e| e.to_i }
+            years = timeframe.split("-").map { |year| year.to_i }
             income = data.to_i
           else
             year = timeframe.to_i
@@ -44,11 +36,13 @@ class EconomicProfileRepository
           end
 
           if category == :free_or_reduced_price_lunch
+            percent = data.to_f if dataformat == "Percent"
+            total = data.to_i if dataformat == "Number"
             compile_lunch_data(all_data, name, category, year, percent, total, dataformat)
           elsif category == :median_household_income
-            compile_other_data(all_data, name, category, years, income)
+            compile_other_data(all_data, name, category, years, income.to_i)
           elsif category == :title_i || category == :children_in_poverty
-            compile_other_data(all_data, name, category, year, percent)
+            compile_other_data(all_data, name, category, year, percent.to_f)
           end
         end
       end
@@ -100,4 +94,5 @@ class EconomicProfileRepository
         all_data[name] = {category => {year => {:percentage => percent, :total => total}}}
       end
     end
+
 end

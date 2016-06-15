@@ -76,8 +76,5 @@ class EconomicProfile
     end
   end
 
-  def year_is_valid?(category, year)
-    attributes[category].keys.include?(year)
-  end
 
 end

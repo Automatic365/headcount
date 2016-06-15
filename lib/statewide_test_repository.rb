@@ -19,9 +19,9 @@ class StatewideTestRepository
       file = csv
 
        CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-        name = row[:location].upcase
+        name    = row[:location].upcase
         subject = row[:score].downcase.to_sym if row.include?(:score)
-        year = row[:timeframe].to_i
+        year    = row[:timeframe].to_i
 
         if row[:data].to_f == 0.0
           percentage = "N/A"
@@ -29,14 +29,9 @@ class StatewideTestRepository
           percentage = row[:data].to_f
         end
 
-
-
         if subjects.include?(category)
-          if row[:race_ethnicity] == "Hawaiian/Pacific Islander"
-          race = :pacific_islander
-          else
           race = row[:race_ethnicity].tr(" ", "_").downcase.to_sym
-          end
+          race = :pacific_islander if row[:race_ethnicity] == "Hawaiian/Pacific Islander"
           compile_data(all_data, name, race, year, category, percentage)
         else
           compile_data(all_data, name, category, year, subject, percentage)
@@ -47,7 +42,6 @@ class StatewideTestRepository
     create_statewide_tests(all_data)
   end
 
-
   def create_statewide_tests(data)
     data.each do |name, district_data|
       statewide_tests.merge!(name => StatewideTest.new(district_data))
@@ -57,7 +51,6 @@ class StatewideTestRepository
   def find_by_name(name)
     statewide_tests[name.upcase]
   end
-
 
   def compile_data(all_data, name, group, year, set, percentage)
     if all_data[name] && all_data[name][group] && all_data[name][group][year]

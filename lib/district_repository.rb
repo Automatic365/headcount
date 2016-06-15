@@ -10,20 +10,16 @@ class DistrictRepository
 
   def initialize(districts = {})
     @districts = districts
-    @er = EnrollmentRepository.new
-    @str = StatewideTestRepository.new
-    @epr = EconomicProfileRepository.new
+    @er        = EnrollmentRepository.new
+    @str       = StatewideTestRepository.new
+    @epr       = EconomicProfileRepository.new
   end
 
   def load_data(data)
     data.each do |category, data_collection|
-      if category == :enrollment
-        er.load_data(data)
-      elsif category == :statewide_testing
-        str.load_data(data)
-      elsif category == :economic_profile
-        epr.load_data(data)
-      end
+      er.load_data(data) if category == :enrollment
+      str.load_data(data) if category == :statewide_testing
+      epr.load_data(data) if category == :economic_profile
     end
     create_districts
   end
@@ -32,18 +28,6 @@ class DistrictRepository
     er.enrollments.keys.each do |name|
       districts[name] = District.new({:name => name}, self)
     end
-  end
-
-  def find_enrollment(district_name)
-    er.find_by_name(district_name)
-  end
-
-  def find_statewide_test(district_name)
-    str.find_by_name(district_name)
-  end
-
-  def find_economic_profile(district_name)
-    epr.find_by_name(district_name)
   end
 
   def find_by_name(name)
@@ -58,6 +42,17 @@ class DistrictRepository
     found_districts
   end
 
+  def find_enrollment(district_name)
+    er.find_by_name(district_name)
+  end
+
+  def find_statewide_test(district_name)
+    str.find_by_name(district_name)
+  end
+
+  def find_economic_profile(district_name)
+    epr.find_by_name(district_name)
+  end
 
 end
 

@@ -32,8 +32,6 @@ class DistrictRepositoryTest < Minitest::Test
     d1 = District.new(name: "ACADEMY 20")
     d2 = District.new(name: "Academy 30")
     dr = DistrictRepository.new({d1.name => d1, d2.name => d2})
-
-
     d = dr.find_all_matching("asasfd")
     assert_equal [], d
     d = dr.find_all_matching("Aca")
@@ -91,6 +89,52 @@ class DistrictRepositoryTest < Minitest::Test
         assert_instance_of EconomicProfile, district.economic_profile
         result = district.economic_profile.title_i_in_year(2009)
         assert_equal 0.014, result
+  end
+
+  def test_create_districts
+    dr = DistrictRepository.new
+    assert dr.districts.empty?
+    dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/sample.csv"
+      }
+    })
+    refute dr.districts.empty?
+    assert_instance_of District, dr.districts["ACADEMY 20"]
+    assert_equal 2, dr.districts.count
+  end
+
+  def test_find_enrollment
+    dr = DistrictRepository.new
+    dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/sample.csv"
+      }
+    })
+    e = dr.find_enrollment("ACADEMY 20")
+    assert_instance_of Enrollment, e
+  end
+
+  def test_find_statewide_test
+    dr = DistrictRepository.new
+    dr.load_data({
+      :statewide_testing => {
+        :third_grade => "./data/sample.csv"
+      }
+    })
+    st = dr.find_statewide_test("ACADEMY 20")
+    assert_instance_of StatewideTest, st
+  end
+
+  def test_find_economic_profile
+    dr = DistrictRepository.new
+    dr.load_data({
+      :economic_profile => {
+        :title_i => "./data/sample.csv"
+      }
+    })
+    ep = dr.find_economic_profile("ACADEMY 20")
+    assert_instance_of EconomicProfile, ep
   end
 
 end

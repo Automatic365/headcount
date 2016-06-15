@@ -9,4 +9,8 @@ module HelperMethods
     data.reduce(0, :+) / data.count
   end
 
+  def year_is_valid?(category, year)
+    attributes[category][year] != nil
+  end
+
 end

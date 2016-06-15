@@ -17,8 +17,8 @@ class EnrollmentRepository
       file_data = CSV.open(file, headers: true, header_converters: :symbol)
 
       file_data.each do |row|
-        name = row[:location].upcase
-        year = row[:timeframe].to_i
+        name       = row[:location].upcase
+        year       = row[:timeframe].to_i
         percentage = row[:data].to_f
 
         compile_data(all_data, name, school_type, year, percentage)
@@ -47,7 +47,6 @@ class EnrollmentRepository
     if all_data[name].nil?
       all_data[name] = {:name => name, school_type => {year => percentage}}
     end
-
   end
 
 end
