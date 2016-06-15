@@ -50,18 +50,10 @@ class HeadcountAnalyst
   end
 
   def kindergarten_participation_against_high_school_graduation(district)
-    # d1 = get_district_data(district)
-    #academy 20 kindgarten.372615
-    #state kindergarten.36571
     kdg_variance = calculate_variance_for_attribute_against_state(district, :kindergarten_participation)
-    #kindergarten variance1.01888
-    #academt 20 kindergarten .90178
-    #state kindergarten .74627
     hs_variance = calculate_variance_for_attribute_against_state(district, :high_school_graduation)
-    #high school variance 1.208383
     total_variance = calculate_variance(kdg_variance, hs_variance)
     truncate_float(total_variance)
-    #total variance .843176
   end
 
   def correlation_trend_exists?(percentage)
@@ -123,37 +115,31 @@ class HeadcountAnalyst
     #EXCLUDE COLORADO FROM DISTRICTS
     grade = input[:grade]
     subject = input[:subject]
+
     number_of_districts = input[:top]
     number_of_districts = 1 if number_of_districts.nil?
+
     weighting = input[:weighting]
-    if weighting.nil?
-      weighting = {}
-      weighting[:math] = 1.0
-      weighting[:reading] = 1.0
-      weighting[:writing] = 1.0
-    end
+    weighting = {math: 1.0, reading: 1.0, writing: 1.0} if weighting.nil?
+
 
     if grade.nil?
       raise InsufficientInformationError
     elsif ![3, 8].include?(grade)
       raise UnknownDataError
     elsif subject.nil?
-      if input[:weighting].nil?
         get_top_district_growth_for_all_subjects(grade, number_of_districts, weighting)
-      else
-        get_top_district_growth_for_all_subjects(grade, number_of_districts, weighting)
-      end
     else
         get_top_district_growth_for_one_subject(grade, subject, number_of_districts, weighting[subject])
     end
   end
 
   def get_top_district_growth_for_all_subjects(grade, number_of_districts, weighting)
-    math = define_subject_growth_for_districts(grade, :math, weighting[:math]) #.071
-    reading = define_subject_growth_for_districts(grade, :reading, weighting[:reading]) #.071
-    writing = define_subject_growth_for_districts(grade, :writing, weighting[:writing]) #.071
-    math_and_writing = math.merge(writing) { |key, oldval, newval| [oldval] + [newval] }
-    district_proficiencies = math_and_writing.merge(reading) { |key, oldval, newval| ([oldval] + [newval]).flatten(1) }
+    math = define_subject_growth_for_districts(grade, :math, weighting[:math])
+    reading = define_subject_growth_for_districts(grade, :reading, weighting[:reading])
+    writing = define_subject_growth_for_districts(grade, :writing, weighting[:writing])
+    mw = math.merge(writing) { |key, a, b| [a] + [b] }
+    district_proficiencies = mw.merge(reading) { |key, a, b| ([a] + [b]).flatten(1) }
     proficiencies = district_proficiencies.select do |name, percentage|
       percentage.is_a? Array || percentage.count == 3
     end

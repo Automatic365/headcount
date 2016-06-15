@@ -1,5 +1,4 @@
-require 'minitest/autorun'
-require 'minitest/pride'
+require 'test_helper'
 require './lib/headcount_analyst'
 require './lib/district_repository'
 require './lib/helper_methods'
@@ -206,6 +205,9 @@ class HeadcountAnalystTest < Minitest::Test
   def test_top_statewide_test_year_over_year_growth
     dr = DistrictRepository.new
     dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/Kindergartners in full-day program.csv"
+      },
       :statewide_testing => {
         :third_grade => "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv",
         :eighth_grade => "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv",
@@ -217,7 +219,7 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(dr)
     result1 = ha.top_statewide_test_year_over_year_growth(grade: 3, subject: :math)
     result2 = ha.top_statewide_test_year_over_year_growth(grade: 3, top: 3, subject: :math)
-    # result3 = ha.top_statewide_test_year_over_year_growth(grade: 3)
+    result3 = ha.top_statewide_test_year_over_year_growth(grade: 3)
     result4 = ha.top_statewide_test_year_over_year_growth(grade: 8, :weighting => {:math => 0.5, :reading => 0.5, :writing => 0.0})
     assert_raises InsufficientInformationError do
       ha.top_statewide_test_year_over_year_growth(subject: :math)
@@ -227,7 +229,7 @@ class HeadcountAnalystTest < Minitest::Test
     end
     assert_equal ["WILEY RE-13 JT", 0.3], result1
     assert_equal [["WILEY RE-13 JT", 0.3], ["SANGRE DE CRISTO RE-22J", 0.071], ["COTOPAXI RE-3", 0.07]], result2
-    # assert_equal ["SANGRE DE CRISTO RE-22J", 0.071], result3
+    assert_equal ["SANGRE DE CRISTO RE-22J", 0.071], result3
     assert_equal ["OURAY R-1", 0.153], result4
   end
 end
