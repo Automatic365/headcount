@@ -19,8 +19,8 @@ Iterations 1-4 and 5 complete. All tests spec harness tests are passing. The out
 
 Learning Goals
 
-Use tests to drive both the design and implementation of code
-Decompose a large application into components such as parsers, repositories, and analysis tools
-Use test fixtures instead of actual data when testing
-Connect related objects together through references
+- Use tests to drive both the design and implementation of code
+- Decompose a large application into components such as parsers, repositories, and analysis tools
+- Use test fixtures instead of actual data when testing
+- Connect related objects together through references
 Learn an agile approach to building software
