@@ -202,10 +202,6 @@ class HeadcountAnalystTest < Minitest::Test
             :kindergarten => "./data/sample_with_statewide_info.csv",
               :high_school_graduation => "./data/sample_hs.csv"
           }})
-    # d1 = District.new(name: "ACADEMY 20")
-    # dr = DistrictRepository.new({d1.name => d1})
-    # e1 = Enrollment.new({"ACADEMY 20"=> {:name=>"ACADEMY 20", :kindergarten_participation=>{2007=>0.39159}, :high_school_participation=>{2007=>NaN}}}
-    # er = EnrollmentRepository.new({e1.name => e1})
     ha = HeadcountAnalyst.new(dr)
     result1 = ha.kindergarten_participation_correlates_with_high_school_graduation(for: 'Academy 20')
     result2 = ha.kindergarten_participation_correlates_with_high_school_graduation(for: 'STATEWIDE')
@@ -337,59 +333,12 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_calculate_by_weight
-    skip
     dr = DistrictRepository.new
     ha = HeadcountAnalyst.new(dr)
     proficiencies = {"COLORADO"=>[0.003, 0.001, 0.002], "ACADEMY 20"=>[-0.004, -0.006, -0.006], "ADAMS COUNTY 14"=>[-0.004, -0.008, -0.002]}
     weight1 = {:math=>0.2, :reading=>0.7, :writing=>0.1}
-    weight2 = {:math=>1.0, :reading=>1.0, :writing=>1.0}
     result1 = {"COLORADO"=>0.006, "ACADEMY 20"=>-0.016, "ADAMS COUNTY 14"=>-0.014}
-    result2 =
     assert_equal result1, ha.calculate_by_weight(proficiencies, weight1, 1.0)
-    assert_equal 0, ha.calculate_by_weight(proficiencies, weight2, 3.0)
-  end
-
-  def test_define_subject_growth
-    skip
-    dr = DistrictRepository.new
-    dr.load_data({
-      :enrollment => {
-        :kindergarten => "./data/Kindergartners in full-day program.csv"
-      },
-      :statewide_testing => {
-        :third_grade => "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv",
-        :eighth_grade => "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv",
-        :math => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv",
-        :reading => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv",
-        :writing => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
-      }
-    })
-    ha = HeadcountAnalyst.new(dr)
-    assert_equal 0, ha.define_subject_growth(3, :math, 1.0)
-  end
-
-  def test_get_year_range
-    skip
-    dr = DistrictRepository.new
-    dr.load_data({
-      :enrollment => {
-        :kindergarten => "./data/Kindergartners in full-day program.csv"
-      },
-      :statewide_testing => {
-        :third_grade => "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv",
-        :eighth_grade => "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv",
-        :math => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv",
-        :reading => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv",
-        :writing => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
-      }
-    })
-    ha = HeadcountAnalyst.new(dr)
-    district = dr
-    assert_equal 0, ha.get_year_range(district, 3, :math)
-  end
-
-  def test_get_growth_for_subject
-
   end
 
   def test_get_top_districts
@@ -401,6 +350,5 @@ class HeadcountAnalystTest < Minitest::Test
     assert_equal result1, ha.get_top_districts(sorted_proficiencies, 2)
     assert_equal result2, ha.get_top_districts(sorted_proficiencies, 1)
   end
-
 
 end

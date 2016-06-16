@@ -46,7 +46,6 @@ class StatewideTestRepositoryTest < Minitest::Test
   def test_compile_data
     sr = StatewideTestRepository.new
     row = {location: "ACADEMY 20", score: "Reading", timeframe: "2010", dataformat: "Percent", data: "0.864"}
-    info = ["ACADEMY 20", 2010, 0.864]
     sr.compile_data(row, 3)
     assert_equal ({reading: 0.864}), sr.all_data["ACADEMY 20"][3][2010]
   end

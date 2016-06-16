@@ -53,7 +53,6 @@ class EconomicProfile
   def free_or_reduced_price_lunch_number_in_year(year)
     raise UnknownDataError unless has_year?(:free_or_reduced_price_lunch, year)
     attributes[:free_or_reduced_price_lunch][year][:total]
-      #fix truncate_float so it works here
   end
 
   def title_i_in_year(year)

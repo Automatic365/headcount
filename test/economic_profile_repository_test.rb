@@ -37,18 +37,10 @@ class EconomicProfileRepositoryTest < Minitest::Test
   end
 
   def test_compile_data
-    skip
     epr = EconomicProfileRepository.new
-    epr.load_data({
-      :economic_profile => {
-        :median_household_income => "./data/Median household income.csv",
-        :children_in_poverty => "./data/School-aged children in poverty.csv",
-        :free_or_reduced_price_lunch => "./data/Students qualifying for free or reduced price lunch.csv",
-        :title_i => "./data/Title I students.csv"
-      }
-    })
-    row = {location: "Colorado", timeframe: "2005-2009", dataformat: "Currency", data: "56222"}
-    assert_equal 0, epr.compile_data(row, :median_household_income)
+    row = {location: "ACADEMY 20", timeframe: "2007", dataformat: "Percent", data: "0.39159"}
+    epr.compile_data(row, :title_i)
+    assert_equal 0.39159, epr.all_data["ACADEMY 20"][:title_i][2007]
   end
 
   def test_parse_row
@@ -59,102 +51,23 @@ class EconomicProfileRepositoryTest < Minitest::Test
 
   def test_income_data
     epr = EconomicProfileRepository.new
-    epr.load_data({
-      :economic_profile => {
-        :median_household_income => "./data/Median household income.csv",
-        :children_in_poverty => "./data/School-aged children in poverty.csv",
-        :free_or_reduced_price_lunch => "./data/Students qualifying for free or reduced price lunch.csv",
-        :title_i => "./data/Title I students.csv"
-      }
-    })
     i = ["COLORADO", "Currency", "56222", "2005-2009", :median_household_income]
-    assert_equal 0, epr.income_data(i)
+    epr.income_data(i)
+    assert_equal ({[2005, 2009]=>56222}), epr.all_data["COLORADO"][:median_household_income]
   end
 
   def test_lunch_data
     epr = EconomicProfileRepository.new
-    epr.load_data({
-      :economic_profile => {
-        :median_household_income => "./data/Median household income.csv",
-        :children_in_poverty => "./data/School-aged children in poverty.csv",
-        :free_or_reduced_price_lunch => "./data/Students qualifying for free or reduced price lunch.csv",
-        :title_i => "./data/Title I students.csv"
-      }
-    })
     i = ["COLORADO", "Percent", "0.07", "2000", :free_or_reduced_price_lunch]
-    assert_equal 0, epr.lunch_data(i)
+    epr.lunch_data(i)
+    assert_equal ({:percentage=>0.07, :total=>0}), epr.all_data["COLORADO"][:free_or_reduced_price_lunch][2000]
   end
 
   def test_misc
     epr = EconomicProfileRepository.new
-    epr.load_data({
-      :economic_profile => {
-        :median_household_income => "./data/Median household income.csv",
-        :children_in_poverty => "./data/School-aged children in poverty.csv",
-        :free_or_reduced_price_lunch => "./data/Students qualifying for free or reduced price lunch.csv",
-        :title_i => "./data/Title I students.csv"
-      }
-    })
     i = ["ACADEMY 20", "Percent", "0.032", "1995", :children_in_poverty]
-    assert_equal 0, epr.misc(i)
+    epr.misc(i)
+    assert_equal 0.032, epr.all_data["ACADEMY 20"][:children_in_poverty][1995]
   end
-
-
-def test_create_economic_profiles
-  epr = EconomicProfileRepository.new
-   data = {"ACADEMY 20"=>
-    {:median_household_income=>{[2005, 2009]=>85060, [2006, 2010]=>85450, [2008, 2012]=>89615, [2007, 2011]=>88099, [2009, 2013]=>89953},
-     :children_in_poverty=>
-      {2005=>0.042,
-       2006=>0.036,
-      },
-     :free_or_reduced_price_lunch=>
-      {2014=>{:percentage=>0.08772, :total=>976},
-       2012=>{:percentage=>0.12539, :total=>3006},
-       2011=>{:percentage=>0.0843, :total=>2834},
-       },
-     :title_i=>{2009=>0.014, 2011=>0.011, 2012=>0.01072, 2013=>0.01246, 2014=>0.0273},
-
-     "ADAMS COUNTY 14"=>
-  {:median_household_income=>{[2005, 2009]=>41382, [2006, 2010]=>40740, [2008, 2012]=>41886, [2007, 2011]=>41430, [2009, 2013]=>41088},
-   :children_in_poverty=>
-    {1995=>0.219,
-     1997=>0.252,
-     1999=>0.19,
-     2000=>0.196,
-     2001=>0.184,
-     2002=>0.203,
-     2003=>0.208,
-     2004=>0.204,
-     2005=>0.195,
-     2006=>0.206,
-     2007=>0.247,
-     2008=>1950.0,
-     2009=>0.24,
-     2010=>0.23185,
-     2011=>0.312,
-     2012=>0.328,
-     2013=>0.264},
-   :free_or_reduced_price_lunch=>
-    {2000=>{:percentage=>0.44, :total=>2845},
-     2001=>{:percentage=>0.13026, :total=>3270},
-     2002=>{:percentage=>0.09615, :total=>3627},
-     2003=>{:percentage=>0.08, :total=>3973},
-     2004=>{:percentage=>0.0967, :total=>642},
-     2005=>{:percentage=>0.0964, :total=>662},
-     2006=>{:percentage=>0.1053, :total=>4321},
-     2007=>{:percentage=>0.1, :total=>678},
-     2008=>{:percentage=>0.1118, :total=>789},
-     2013=>{:percentage=>0.09437, :total=>5479},
-     2009=>{:percentage=>0.1089, :total=>5288},
-     2010=>{:percentage=>0.092, :total=>5634},
-     2011=>{:percentage=>0.0893, :total=>654},
-     2012=>{:percentage=>0.0896, :total=>672},
-     2014=>{:percentage=>0.72205, :total=>4954}},
-   :title_i=>{2009=>0.669, 2011=>0.712, 2012=>0.71053, 2013=>0.66096, 2014=>0.66126}}}}
-     epr.create_economic_profiles(data)
-     assert_equal data, epr
-   end
-
 
 end

@@ -17,7 +17,7 @@ class DistrictRepository
 
   def load_data(data)
     data.each do |category, data_collection|
-      er.load_data(data) if category  == :enrollment
+      er.load_data(data)  if category == :enrollment
       str.load_data(data) if category == :statewide_testing
       epr.load_data(data) if category == :economic_profile
     end
