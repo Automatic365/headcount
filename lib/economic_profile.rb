@@ -17,11 +17,8 @@ class EconomicProfile
   def median_household_income_in_year(year)
     year_ranges = get_year_ranges
     incomes = check_ranges_for_income_in_year(year_ranges, year)
-    if incomes.empty?
-      raise UnknownDataError
-    else
-      calculate_average(incomes)
-    end
+    raise UnknownDataError if incomes.empty?
+    calculate_average(incomes)
   end
 
   def get_year_ranges
@@ -44,37 +41,24 @@ class EconomicProfile
   end
 
   def children_in_poverty_in_year(year)
-    if year_is_valid?(:children_in_poverty, year)
-      truncate_float(attributes[:children_in_poverty][year])
-    else
-      raise UnknownDataError
-    end
+    raise UnknownDataError unless has_year?(:children_in_poverty, year)
+    truncate_float(attributes[:children_in_poverty][year])
   end
 
   def free_or_reduced_price_lunch_percentage_in_year(year)
-    if year_is_valid?(:free_or_reduced_price_lunch, year)
-      truncate_float(attributes[:free_or_reduced_price_lunch][year][:percentage])
-    else
-      raise UnknownDataError
-    end
+    raise UnknownDataError unless has_year?(:free_or_reduced_price_lunch, year)
+    truncate_float(attributes[:free_or_reduced_price_lunch][year][:percentage])
   end
 
   def free_or_reduced_price_lunch_number_in_year(year)
-    if year_is_valid?(:free_or_reduced_price_lunch, year)
-      attributes[:free_or_reduced_price_lunch][year][:total]
-      ###Fix truncate float so it works here
-    else
-      raise UnknownDataError
-    end
+    raise UnknownDataError unless has_year?(:free_or_reduced_price_lunch, year)
+    attributes[:free_or_reduced_price_lunch][year][:total]
+      #fix truncate_float so it works here
   end
 
   def title_i_in_year(year)
-    if year_is_valid?(:title_i, year)
-      attributes[:title_i][year]
-    else
-      raise UnknownDataError
-    end
+    raise UnknownDataError unless has_year?(:title_i, year)
+    attributes[:title_i][year]
   end
-
 
 end

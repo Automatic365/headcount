@@ -12,9 +12,7 @@ class EnrollmentRepository
     all_data = {}
     data[:enrollment].each do |school_type, csv|
       school_type = :kindergarten_participation if school_type == :kindergarten
-      file = csv
-
-      file_data = CSV.open(file, headers: true, header_converters: :symbol)
+      file_data = CSV.open(csv, headers: true, header_converters: :symbol)
 
       file_data.each do |row|
         name       = row[:location].upcase

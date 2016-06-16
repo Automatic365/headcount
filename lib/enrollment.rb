@@ -16,7 +16,7 @@ class Enrollment
   end
 
   def kindergarten_participation_in_year(year)
-      if year_is_valid?(:kindergarten_participation, year)
+      if has_year?(:kindergarten_participation, year)
         truncate_float(attributes[:kindergarten_participation][year])
       end
   end
@@ -29,7 +29,7 @@ class Enrollment
   end
 
   def graduation_rate_in_year(year)
-    if year_is_valid?(:high_school_graduation, year)
+    if has_year?(:high_school_graduation, year)
       truncate_float(attributes[:high_school_graduation][year])
     end
   end

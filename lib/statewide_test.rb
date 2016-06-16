@@ -17,35 +17,23 @@ attr_reader :attributes, :grades, :races, :subjects
   end
 
   def proficient_by_grade(grade)
-    if grades.include?(grade)
-      attributes[grade]
-    else
-      raise UnknownDataError
-    end
+    raise UnknownDataError unless grades.include?(grade)
+    attributes[grade]
   end
 
   def proficient_by_race_or_ethnicity(race)
-    if races.include?(race)
-      attributes[race]
-    else
-      raise UnknownRaceError
-    end
+    raise UnknownRaceError unless races.include?(race)
+    attributes[race]
   end
 
   def proficient_for_subject_by_grade_in_year(subject, grade, year)
-    if subjects.include?(subject) && grades.include?(grade)
-      attributes[grade][year][subject]
-    else
-      raise UnknownDataError
-    end
+    raise UnknownDataError unless subjects.include?(subject) && grades.include?(grade)
+    attributes[grade][year][subject]
   end
 
   def proficient_for_subject_by_race_in_year(subject, race, year)
-    if subjects.include?(subject) && races.include?(race)
-      attributes[race][year][subject]
-    else
-      raise UnknownDataError
-    end
+    raise UnknownDataError unless subjects.include?(subject) && races.include?(race)
+    attributes[race][year][subject]
   end
 
 end

@@ -14,13 +14,13 @@ include HelperMethods
     assert_equal 4, calculate_average(data)
   end
 
-  def year_is_valid?
+  def has_year?
     ep = EconomicProfile.new({:title_i => {2015 => 0.543}})
-    assert year_is_valid?(:title_i, 2015)
-    refute year_is_valid?(:free_or_reduced_price_lunch, 2015)
+    assert has_year?(:title_i, 2015)
+    refute has_year?(:free_or_reduced_price_lunch, 2015)
     e = Enrollment.new({:kindergarten_participation=>{2007=>0.39159, 2006=>0.35364}})
-    assert year_is_valid?(:kindergarten_participation, 2007)
-    refute year_is_valid?(:kindergarten_pariicipation, 2001)
+    assert has_year?(:kindergarten_participation, 2007)
+    refute has_year?(:kindergarten_pariicipation, 2001)
   end
 
 end

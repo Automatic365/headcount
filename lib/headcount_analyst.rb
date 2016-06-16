@@ -65,10 +65,7 @@ class HeadcountAnalyst
   end
 
   def count_positive_correlations(correlations)
-    correlations.reduce(0) do |sum, correlation|
-      sum += 1 if correlation == true
-      sum
-    end
+    correlations.count { |i| i == true }
   end
 
   def find_correlations(districts)
