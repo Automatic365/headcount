@@ -3,45 +3,58 @@ require 'csv'
 
 class StatewideTestRepository
 
-  DELETE ME NOW
-
-  attr_reader :statewide_tests
+  attr_reader :statewide_tests, :all_data
 
   def initialize(statewide_tests = {})
     @statewide_tests = statewide_tests
+    @all_data = {}
   end
 
   def load_data(data)
-    all_data = {}
     data[:statewide_testing].each do |category, csv|
-      category = 3 if category == :third_grade
-      category = 8 if category == :eighth_grade
-      subjects = [:math, :reading, :writing]
-
-      file = csv
-
-       CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
-        name    = row[:location].upcase
-        subject = row[:score].downcase.to_sym if row.include?(:score)
-        year    = row[:timeframe].to_i
-
-        if row[:data].to_f == 0.0
-          percentage = "N/A"
-        else
-          percentage = row[:data].to_f
-        end
-
-        if subjects.include?(category)
-          race = row[:race_ethnicity].tr(" ", "_").downcase.to_sym
-          race = :pacific_islander if row[:race_ethnicity] == "Hawaiian/Pacific Islander"
-          compile_data(all_data, name, race, year, category, percentage)
-        else
-          compile_data(all_data, name, category, year, subject, percentage)
-        end
-
+      category = set_category(category)
+       CSV.foreach(csv, headers: true, header_converters: :symbol) do |row|
+         compile_data(row, category)
       end
     end
     create_statewide_tests(all_data)
+  end
+
+  def set_category(category)
+    category = 3 if category == :third_grade
+    category = 8 if category == :eighth_grade
+    category
+  end
+
+  def parse_row(row)
+    percentage = check_for_non_numbers(row)
+    [row[:location].upcase, row[:timeframe].to_i, percentage]
+  end
+
+  def compile_data(row, category)
+    subjects = [:math, :reading, :writing]
+    info = parse_row(row)
+    race_data(category, info, row) if subjects.include?(category)
+    grade_data(category, info, row) if !subjects.include?(category)
+  end
+
+  def race_data(category, info, row)
+    name, year, percentage = info
+    r = row[:race_ethnicity].tr(" ", "_").downcase.to_sym
+    r = :pacific_islander if row[:race_ethnicity] == "Hawaiian/Pacific Islander"
+    generate_data(all_data, name, r, year, category, percentage)
+  end
+
+  def grade_data(category, info, row)
+    name, year, percentage = info
+    subject = row[:score].downcase.to_sym if row.include?(:score)
+    generate_data(all_data, name, category, year, subject, percentage)
+  end
+
+  def check_for_non_numbers(row)
+    percentage = row[:data].to_f
+    percentage = "N/A" if row[:data].to_f == 0.0
+    percentage
   end
 
   def create_statewide_tests(data)
@@ -54,28 +67,19 @@ class StatewideTestRepository
     statewide_tests[name.upcase]
   end
 
-  def compile_data(all_data, name, group, year, set, percentage)
-    if all_data[name] && all_data[name][group] && all_data[name][group][year]
-      all_data[name][group][year][set] = percentage
+  def generate_data(data, name, group, year, set, percentage)
+    if data[name] && data[name][group] && data[name][group][year]
+      data[name][group][year][set] = percentage
     end
-    if all_data[name] && all_data[name][group] && all_data[name][group][year].nil?
-      all_data[name][group][year] = {set => percentage}
+    if data[name] && data[name][group] && data[name][group][year].nil?
+      data[name][group][year] = {set => percentage}
     end
-    if all_data[name] && all_data[name][group].nil?
-      all_data[name][group] = {year => {set => percentage}}
+    if data[name] && data[name][group].nil?
+      data[name][group] = {year => {set => percentage}}
     end
-    if all_data[name].nil?
-      all_data[name] = {group => {year => {set => percentage}}}
+    if data[name].nil?
+      data[name] = {group => {year => {set => percentage}}}
     end
   end
-
-            #{name => district,
-            #grade => {year => {subject => percentage}},
-            #race => {year => {subject => percentage}}}
-
-
-
-
-
 
 end

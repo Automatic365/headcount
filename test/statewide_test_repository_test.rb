@@ -24,17 +24,62 @@ class StatewideTestRepositoryTest < Minitest::Test
   end
 
   def test_find_by_name
-      st = StatewideTest.new(name: "Academy 20")
-      str = StatewideTestRepository.new({st.name => st})
-      assert_equal nil, str.find_by_name("asdfklj")
-      result = str.find_by_name("ACADEMY 20")
-      assert_equal "ACADEMY 20", result.name
+    st = StatewideTest.new(name: "Academy 20")
+    str = StatewideTestRepository.new({st.name => st})
+    assert_equal nil, str.find_by_name("asdfklj")
+    result = str.find_by_name("ACADEMY 20")
+    assert_equal "ACADEMY 20", result.name
   end
 
+  def test_set_category
+    sr = StatewideTestRepository.new
+    assert_equal nil, sr.set_category(nil)
+    assert_equal 8, sr.set_category(:eighth_grade)
+  end
 
+  def test_parse_row
+    sr = StatewideTestRepository.new
+    row = {location: "abc", timeframe: 1.0, data: 0.0}
+    assert_equal ["ABC", 1, "N/A"], sr.parse_row(row)
+  end
 
+  def test_compile_data
+    sr = StatewideTestRepository.new
+    row = {location: "ACADEMY 20", score: "Reading", timeframe: "2010", dataformat: "Percent", data: "0.864"}
+    info = ["ACADEMY 20", 2010, 0.864]
+    sr.compile_data(row, 3)
+    assert_equal ({reading: 0.864}), sr.all_data["ACADEMY 20"][3][2010]
+  end
 
+  def test_race_data
+    sr = StatewideTestRepository.new
+    row = {location: "Colorado", race_ethnicity: "All Students", timeframe: "2011", dataformat: "Percent", data: "0.557"}
+    info = ["ACADEMY 20", 2011, 0.557]
+    sr.race_data(:math, info, row)
+    assert_equal ({math: 0.557}), sr.all_data["ACADEMY 20"][:all_students][2011]
+  end
 
+  def test_grade_data
+    sr = StatewideTestRepository.new
+    row = {location: "ACADEMY 20", score: "Reading", timeframe: "2010", dataformat: "Percent", data: "0.864"}
+    info = ["ACADEMY 20", 2010, 0.864]
+    sr.grade_data(3, info, row)
+    assert_equal ({reading: 0.864}), sr.all_data["ACADEMY 20"][3][2010]
+  end
+
+  def test_check_for_non_numbers
+    sr = StatewideTestRepository.new
+    row1 = {data: "0.864"}
+    row2 = {data: "0.0"}
+    assert_equal 0.864, sr.check_for_non_numbers(row1)
+    assert_equal "N/A", sr.check_for_non_numbers(row2)
+  end
+
+  def test_generate_data
+    sr = StatewideTestRepository.new
+    sr.generate_data(sr.all_data, "ACADEMY 20", 3, 2010, :reading, 0.864)
+    assert_equal ({reading: 0.864}), sr.all_data["ACADEMY 20"][3][2010]
+  end
 
 
 end
