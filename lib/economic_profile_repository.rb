@@ -7,7 +7,7 @@ class EconomicProfileRepository
 
     def initialize(economic_profiles = {})
       @economic_profiles = economic_profiles
-      @all_data = {}
+      @all_data          = {}
     end
 
     def load_data(data)
@@ -26,6 +26,9 @@ class EconomicProfileRepository
       misc(i) if category == :title_i || category == :children_in_poverty
     end
 
+    def parse_row(row)
+      [row[:location].upcase, row[:dataformat], row[:data], row[:timeframe]]
+    end
 
     def income_data(i)
       name, type, income, timeframe, category = i
@@ -49,6 +52,8 @@ class EconomicProfileRepository
     def find_by_name(name)
       economic_profiles[name.upcase]
     end
+
+private
 
     def create_economic_profiles(data)
       data.each do |name, district_data|
@@ -85,12 +90,6 @@ class EconomicProfileRepository
         data[name] = {set => {yr => {percentage: prcnt, total: total}}}
       end
     end
-
-private
-
-def parse_row(row)
-  [row[:location].upcase, row[:dataformat], row[:data], row[:timeframe]]
-end
 
 
 end

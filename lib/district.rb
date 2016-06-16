@@ -1,10 +1,9 @@
 class District
 attr_reader :attributes, :dr
-# attr_accessor :enrollment, :statewide_test, :economic_profile
 
   def initialize(attributes, dr = nil)
     @attributes = attributes
-    @dr = dr
+    @dr         = dr
   end
 
   def name

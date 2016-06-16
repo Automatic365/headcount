@@ -2,7 +2,6 @@ require './test/test_helper'
 require './lib/statewide_test'
 require './lib/errors'
 
-
 class StatewideTestTest < Minitest::Test
 
   def test_statewide_test_has_a_name
@@ -49,6 +48,5 @@ class StatewideTestTest < Minitest::Test
       swt.proficient_for_subject_by_race_in_year(:math, :martian, 2008)
     end
   end
-
 
 end

@@ -6,7 +6,7 @@ class EnrollmentRepository
 
   def initialize(enrollments = {})
     @enrollments = enrollments
-    @all_data = {}
+    @all_data    = {}
   end
 
   def load_data(data)

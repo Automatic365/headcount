@@ -17,11 +17,9 @@ class HeadcountAnalyst
     weight = input[:weighting]
     weight = {math: 1.0, reading: 1.0, writing: 1.0} if weight.nil?
 
-    if grade.nil?
-      raise InsufficientInformationError
-    elsif ![3, 8].include?(grade)
-      raise UnknownDataError
-    elsif subject.nil?
+    raise InsufficientInformationError if grade.nil?
+    raise UnknownDataError if ![3, 8].include?(grade)
+    if subject.nil?
       top_growth_for_all_subjects(grade, district_num, weight)
     else
       top_growth_for_subject(grade, subject, district_num, weight[subject])
@@ -182,8 +180,6 @@ class HeadcountAnalyst
     sort_districts_by_proficiency(district_avg)
   end
 
-  private
-
   def define_subject_growth(grade, subject, weight)
     proficiencies = {}
     district_repo.districts.each do |district_name, district|
@@ -196,10 +192,18 @@ class HeadcountAnalyst
   end
 
   def get_year_range(district, grade, subject)
-      district.statewide_test.attributes[grade].keys.reject do |year|
+    district.statewide_test.attributes[grade].keys.reject do |year|
       district.statewide_test.attributes[grade][year][subject].to_f == 0.0
     end
   end
+
+  def calculate_by_weight(proficiencies, weight, number)
+    proficiencies.each do |key, value|
+      proficiencies[key] = value.reduce(:+) / number
+    end
+  end
+
+  private
 
   def get_growth_for_subject(district, year_range, grade, subject)
     latest = year_range.max
@@ -215,10 +219,5 @@ class HeadcountAnalyst
     end.reverse
   end
 
-  def calculate_by_weight(proficiencies, weight, number)
-    proficiencies.each do |key, value|
-      proficiencies[key] = value.reduce(:+) / number
-    end
-  end
 
 end

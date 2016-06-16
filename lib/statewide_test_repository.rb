@@ -7,7 +7,7 @@ class StatewideTestRepository
 
   def initialize(statewide_tests = {})
     @statewide_tests = statewide_tests
-    @all_data = {}
+    @all_data        = {}
   end
 
   def load_data(data)
@@ -57,12 +57,6 @@ class StatewideTestRepository
     percentage
   end
 
-  def create_statewide_tests(data)
-    data.each do |name, district_data|
-      statewide_tests.merge!(name => StatewideTest.new(district_data))
-    end
-  end
-
   def find_by_name(name)
     statewide_tests[name.upcase]
   end
@@ -79,6 +73,14 @@ class StatewideTestRepository
     end
     if data[name].nil?
       data[name] = {group => {year => {set => percentage}}}
+    end
+  end
+
+  private
+
+  def create_statewide_tests(data)
+    data.each do |name, district_data|
+      statewide_tests.merge!(name => StatewideTest.new(district_data))
     end
   end
 
