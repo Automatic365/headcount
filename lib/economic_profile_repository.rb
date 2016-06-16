@@ -26,9 +26,6 @@ class EconomicProfileRepository
       misc(i) if category == :title_i || category == :children_in_poverty
     end
 
-    def parse_row(row)
-      [row[:location].upcase, row[:dataformat], row[:data], row[:timeframe]]
-    end
 
     def income_data(i)
       name, type, income, timeframe, category = i
@@ -55,7 +52,7 @@ class EconomicProfileRepository
 
     def create_economic_profiles(data)
       data.each do |name, district_data|
-        economic_profiles.merge!(name => EconomicProfile.new(district_data))
+      economic_profiles.merge!(name => EconomicProfile.new(district_data))
       end
     end
 
@@ -88,5 +85,12 @@ class EconomicProfileRepository
         data[name] = {set => {yr => {percentage: prcnt, total: total}}}
       end
     end
+
+private
+
+def parse_row(row)
+  [row[:location].upcase, row[:dataformat], row[:data], row[:timeframe]]
+end
+
 
 end

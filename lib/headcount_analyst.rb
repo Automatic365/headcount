@@ -9,107 +9,7 @@ class HeadcountAnalyst
     @district_repo = district_repo
   end
 
-  def kindergarten_participation_rate_variation(district, comparison)
-    avg1 = get_attribute_avg(district, :kindergarten_participation)
-    avg2 = get_attribute_avg(comparison[:against], :kindergarten_participation)
-    truncate_float(avg1 / avg2)
-  end
-
-  def kindergarten_participation_rate_variation_trend(district, comparison)
-    data1 = get_district_data(district, :kindergarten_participation)
-    data2 = get_district_data(comparison[:against], :kindergarten_participation)
-    averages = data1.merge(data2){ |key, a, b| truncate_float(b / a) }
-  end
-
-  def get_district_data(district, school_type)
-    name = get_district_by_name(district)
-    data = access_enrollment_attributes(name, school_type)
-  end
-
-  def get_district_by_name(name)
-    district_repo.find_by_name(name)
-  end
-
-  def access_enrollment_attributes(district, school_type)
-    district.enrollment.attributes[school_type]
-  end
-
-  def get_attribute_avg(district, school_type)
-    d = get_district_data(district, school_type)
-    calculate_average(d.values)
-  end
-
-  def calculate_variance(district_avg, state_avg)
-    district_avg / state_avg
-  end
-
-  def variance_against_state(district, school_type)
-    k_district = get_attribute_avg(district, school_type)
-    k_state = get_attribute_avg("Colorado", school_type)
-    k_variance = calculate_variance(k_district, k_state)
-  end
-
-  def kindergarten_participation_against_high_school_graduation(district)
-    k_variance = variance_against_state(district, :kindergarten_participation)
-    hs_variance = variance_against_state(district, :high_school_graduation)
-    total_variance = calculate_variance(k_variance, hs_variance)
-    truncate_float(total_variance)
-  end
-
-  def correlation_trend_exists?(percentage)
-    percentage >= 0.7
-  end
-
-  def is_correlated?(variance)
-    variance >= 0.6 && variance <= 1.5
-  end
-
-  def count_positive_correlations(correlations)
-    correlations.count { |i| i == true }
-  end
-
-  def find_correlations(districts)
-    districts.reduce([]) do |data, name|
-      variance = kindergarten_participation_against_high_school_graduation(name)
-      data << true if is_correlated?(variance)
-      data << false if !is_correlated?(variance)
-      data
-    end
-  end
-
-  def check_for_correlation_trend(district_names)
-    correlations = find_correlations(district_names)
-    total = correlations.count
-    positive_correlations = count_positive_correlations(correlations)
-    percentage = positive_correlations / total
-    correlation_trend_exists?(percentage)
-  end
-
-  def check_for_single_correlation(name)
-    variance = kindergarten_participation_against_high_school_graduation(name)
-    is_correlated?(variance)
-  end
-
-  def omit_statewide_data(districts)
-    districts.reject { |district| district == "COLORADO"}
-  end
-
-  def kindergarten_participation_correlates_with_high_school_graduation(name)
-    if name.keys[0] == :for
-      name = name[:for].upcase
-      if name == "STATEWIDE"
-        district_names = omit_statewide_data(district_repo.districts)
-        check_for_correlation_trend(district_names.keys)
-      else
-        check_for_single_correlation(name)
-      end
-    elsif name.keys[0] == :across
-        check_for_correlation_trend(name[:across])
-    end
-  end
-
   def top_statewide_test_year_over_year_growth(input)
-    #EXCLUDE COLORADO FROM DISTRICTS
     grade = input[:grade]
     subject = input[:subject]
     district_num = input[:top]
@@ -122,10 +22,54 @@ class HeadcountAnalyst
     elsif ![3, 8].include?(grade)
       raise UnknownDataError
     elsif subject.nil?
-        top_growth_for_all_subjects(grade, district_num, weight)
+      top_growth_for_all_subjects(grade, district_num, weight)
     else
-        top_growth_for_subject(grade, subject, district_num, weight[subject])
+      top_growth_for_subject(grade, subject, district_num, weight[subject])
     end
+  end
+
+  def kindergarten_participation_rate_variation_trend(district, comparison)
+    data1 = get_district_data(district, :kindergarten_participation)
+    data2 = get_district_data(comparison[:against], :kindergarten_participation)
+    data1.merge(data2){ |key, a, b| truncate_float(b / a) }
+  end
+
+  def kindergarten_participation_rate_variation(district, comparison)
+    avg1 = get_attribute_avg(district, :kindergarten_participation)
+    avg2 = get_attribute_avg(comparison[:against], :kindergarten_participation)
+    truncate_float(avg1 / avg2)
+  end
+
+  def kindergarten_participation_correlates_with_high_school_graduation(name)
+    if name.keys[0] == :for
+      name = name[:for].upcase
+      if name == "STATEWIDE"
+        district_names = omit_statewide_data(district_repo.districts)
+        check_for_correlation_trend(district_names.keys)
+      else
+        check_for_single_correlation(name)
+      end
+    elsif name.keys[0] == :across
+      check_for_correlation_trend(name[:across])
+    end
+  end
+
+  def check_for_correlation_trend(district_names)
+    correlations = find_correlations(district_names)
+    total = correlations.count
+    positive_correlations = count_positive_correlations(correlations)
+    percentage = positive_correlations / total
+    correlation_trend_exists?(percentage)
+  end
+
+  def get_attribute_avg(district, school_type)
+    d = get_district_data(district, school_type)
+    calculate_average(d.values)
+  end
+
+  def check_for_single_correlation(name)
+    variance = kindergarten_participation_against_high_school_graduation(name)
+    is_correlated?(variance)
   end
 
   def top_growth_for_all_subjects(grade, district_num, weight)
@@ -136,9 +80,31 @@ class HeadcountAnalyst
     get_top_districts(proficiencies, district_num)
   end
 
-  def merge_proficiencies(m, r, w)
-    mw = m.merge(w) { |key, a, b| [a] + [b] }
-    mw.merge(r) { |key, a, b| ([a] + [b]).flatten(1) }
+  def count_positive_correlations(correlations)
+    correlations.count { |i| i == true }
+  end
+
+  def omit_statewide_data(districts)
+    districts.reject { |district| district == "COLORADO"}
+  end
+
+  def get_district_data(district, school_type)
+    name = get_district_by_name(district)
+    access_enrollment_attributes(name, school_type)
+  end
+
+  def calculate_variance(district_avg, state_avg)
+    district_avg / state_avg
+  end
+
+  def get_district_by_name(name)
+    district_repo.find_by_name(name)
+  end
+
+  def top_growth_for_subject(grade, subject, district_num, weight)
+    district_proficiencies = define_subject_growth(grade, subject, weight)
+    sorted_proficiencies = sort_districts_by_proficiency(district_proficiencies)
+    get_top_districts(sorted_proficiencies, district_num)
   end
 
   def select_valid_proficiencies(district_proficiencies)
@@ -147,11 +113,36 @@ class HeadcountAnalyst
     end
   end
 
-  def assemble_valid_averages(m, r, w, weight)
-    district_proficiencies = merge_proficiencies(m, r, w)
-    proficiencies = select_valid_proficiencies(district_proficiencies)
-    district_avg = calculate_average_proficiencies(proficiencies, weight)
-    sorted_proficiencies = sort_districts_by_proficiency(district_avg)
+  def is_weighted?(weight)
+    weight.values.reduce(:+) == 1.0
+  end
+
+  def correlation_trend_exists?(percentage)
+    percentage >= 0.7
+  end
+
+  def is_correlated?(variance)
+    variance >= 0.6 && variance <= 1.5
+  end
+
+  def variance_against_state(district, school_type)
+    k_district = get_attribute_avg(district, school_type)
+    k_state = get_attribute_avg("Colorado", school_type)
+    calculate_variance(k_district, k_state)
+  end
+
+  def find_correlations(districts)
+    districts.reduce([]) do |data, name|
+      variance = kindergarten_participation_against_high_school_graduation(name)
+      data << true if is_correlated?(variance)
+      data << false if !is_correlated?(variance)
+      data
+    end
+  end
+
+  def merge_proficiencies(m, r, w)
+    mw = m.merge(w) { |key, a, b| [a] + [b] }
+    mw.merge(r) { |key, a, b| ([a] + [b]).flatten(1) }
   end
 
   def calculate_average_proficiencies(proficiencies, weight)
@@ -162,21 +153,36 @@ class HeadcountAnalyst
     end
   end
 
-  def is_weighted?(weight)
-    weight.values.reduce(:+) == 1.0
+  def kindergarten_participation_against_high_school_graduation(district)
+    k_variance = variance_against_state(district, :kindergarten_participation)
+    hs_variance = variance_against_state(district, :high_school_graduation)
+    total_variance = calculate_variance(k_variance, hs_variance)
+    truncate_float(total_variance)
   end
 
-  def calculate_by_weight(proficiencies, weight, number)
-    proficiencies.each do |key, value|
-      proficiencies[key] = value.reduce(:+) / number
+  def access_enrollment_attributes(district, school_type)
+    district.enrollment.attributes[school_type]
+  end
+
+  def get_top_districts(sorted_proficiencies, district_num)
+    if sorted_proficiencies[0][1] == sorted_proficiencies[1][1]
+      sorted_proficiencies[1]
+    elsif
+      district_num == 1
+      sorted_proficiencies.first
+    else
+      sorted_proficiencies[0..(district_num - 1)]
     end
   end
 
-  def top_growth_for_subject(grade, subject, district_num, weight)
-    district_proficiencies = define_subject_growth(grade, subject, weight)
-    sorted_proficiencies = sort_districts_by_proficiency(district_proficiencies)
-    get_top_districts(sorted_proficiencies, district_num)
+  def assemble_valid_averages(m, r, w, weight)
+    district_proficiencies = merge_proficiencies(m, r, w)
+    proficiencies = select_valid_proficiencies(district_proficiencies)
+    district_avg = calculate_average_proficiencies(proficiencies, weight)
+    sort_districts_by_proficiency(district_avg)
   end
+
+  private
 
   def define_subject_growth(grade, subject, weight)
     proficiencies = {}
@@ -190,7 +196,7 @@ class HeadcountAnalyst
   end
 
   def get_year_range(district, grade, subject)
-    district.statewide_test.attributes[grade].keys.reject do |year|
+      district.statewide_test.attributes[grade].keys.reject do |year|
       district.statewide_test.attributes[grade][year][subject].to_f == 0.0
     end
   end
@@ -200,7 +206,7 @@ class HeadcountAnalyst
     earliest = year_range.min
     latest_data = district.statewide_test.attributes[grade][latest][subject]
     earliest_data = district.statewide_test.attributes[grade][earliest][subject]
-    avg_growth = (latest_data - earliest_data) / (latest - earliest)
+    (latest_data - earliest_data) / (latest - earliest)
   end
 
   def sort_districts_by_proficiency(district_proficiencies)
@@ -209,14 +215,9 @@ class HeadcountAnalyst
     end.reverse
   end
 
-  def get_top_districts(sorted_proficiencies, district_num)
-    if sorted_proficiencies[0][1] == sorted_proficiencies[1][1]
-      sorted_proficiencies[1]
-    elsif
-      district_num == 1
-      sorted_proficiencies.first
-    else
-      sorted_proficiencies[0..(district_num - 1)]
+  def calculate_by_weight(proficiencies, weight, number)
+    proficiencies.each do |key, value|
+      proficiencies[key] = value.reduce(:+) / number
     end
   end
 

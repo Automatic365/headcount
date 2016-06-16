@@ -1,6 +1,7 @@
 require_relative 'test_helper'
 require './lib/headcount_analyst'
 require './lib/district_repository'
+require './lib/district'
 require './lib/helper_methods'
 require './lib/errors'
 require './lib/economic_profile_repository'
@@ -366,5 +367,40 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(dr)
     assert_equal 0, ha.define_subject_growth(3, :math, 1.0)
   end
+
+  def test_get_year_range
+    skip
+    dr = DistrictRepository.new
+    dr.load_data({
+      :enrollment => {
+        :kindergarten => "./data/Kindergartners in full-day program.csv"
+      },
+      :statewide_testing => {
+        :third_grade => "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv",
+        :eighth_grade => "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv",
+        :math => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv",
+        :reading => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv",
+        :writing => "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
+      }
+    })
+    ha = HeadcountAnalyst.new(dr)
+    district = dr
+    assert_equal 0, ha.get_year_range(district, 3, :math)
+  end
+
+  def test_get_growth_for_subject
+
+  end
+
+  def test_get_top_districts
+    dr = DistrictRepository.new
+    ha = HeadcountAnalyst.new(dr)
+    sorted_proficiencies = [["WILEY RE-13 JT", 0.15], ["COTOPAXI RE-3", 0.035], ["SANGRE DE CRISTO RE-22J", 0.035]]
+    result1 = [["WILEY RE-13 JT", 0.15], ["COTOPAXI RE-3", 0.035]]
+    result2 = ["WILEY RE-13 JT", 0.15]
+    assert_equal result1, ha.get_top_districts(sorted_proficiencies, 2)
+    assert_equal result2, ha.get_top_districts(sorted_proficiencies, 1)
+  end
+
 
 end
