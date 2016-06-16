@@ -2,9 +2,6 @@ require_relative 'statewide_test'
 require 'csv'
 
 class StatewideTestRepository
-
-  DELETE ME NOW
-
   attr_reader :statewide_tests
 
   def initialize(statewide_tests = {})
