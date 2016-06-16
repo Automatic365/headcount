@@ -15,12 +15,12 @@ include HelperMethods
   end
 
   def has_year?
-    ep = EconomicProfile.new({:title_i => {2015 => 0.543}})
+    EconomicProfile.new({:title_i => {2015 => 0.543}})
     assert has_year?(:title_i, 2015)
     refute has_year?(:free_or_reduced_price_lunch, 2015)
-    e = Enrollment.new({:kindergarten_participation=>{2007=>0.39159, 2006=>0.35364}})
+    Enrollment.new({:kindergarten_participation=>{2007=>0.39159, 2006=>0.35364}})
     assert has_year?(:kindergarten_participation, 2007)
-    refute has_year?(:kindergarten_pariicipation, 2001)
+    refute has_year?(:kindergarten_participation, 2001)
   end
 
 end
